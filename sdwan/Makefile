@@ -40,7 +40,7 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Network
 	TITLE:=A simple, decentralized mesh VPN with WireGuard support.
 	DEPENDS:=@(x86_64||arm||aarch64||mipsel||mips) +kmod-tun
-	URL:=https://github.com/EasyTier/EasyTier
+	URL:=https://github.com/zzxym/sdwan
 endef
 
 define Package/$(PKG_NAME)/description
@@ -48,7 +48,7 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Prepare
-	[ ! -f $(PKG_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION).zip ] && wget https://github.com/EasyTier/EasyTier/releases/download/v$(PKG_VERSION)/$(PKG_NAME)-linux-$(APP_ARCH)-v$(PKG_VERSION).zip -O $(PKG_NAME)-$(PKG_VERSION).zip
+	[ ! -f $(PKG_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION).zip ] && wget https://github.com/zzxym/sdwan/releases/download/v$(PKG_VERSION)/$(PKG_NAME)-linux-$(APP_ARCH)-v$(PKG_VERSION).zip -O $(PKG_NAME)-$(PKG_VERSION).zip
 	unzip -j $(PKG_NAME)-$(PKG_VERSION).zip -d $(PKG_BUILD_DIR)
 endef
 
@@ -57,9 +57,9 @@ endef
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/easytier-core $(1)/usr/bin/easytier-core
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/easytier-cli $(1)/usr/bin/easytier-cli
-	[ "$(APP_ARCH)" != "mips" ] && [ "$(APP_ARCH)" != "mipsel" ] && $(INSTALL_BIN) $(PKG_BUILD_DIR)/easytier-web-embed $(1)/usr/bin/easytier-web || true
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/sdwan-core $(1)/usr/bin/sdwan-core
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/sdwan-cli $(1)/usr/bin/sdwan-cli
+	[ "$(APP_ARCH)" != "mips" ] && [ "$(APP_ARCH)" != "mipsel" ] && $(INSTALL_BIN) $(PKG_BUILD_DIR)/sdwan-web-embed $(1)/usr/bin/sdwan-web || true
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
