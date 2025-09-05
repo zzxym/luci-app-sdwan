@@ -1,4 +1,4 @@
-name: Build-OpenWrt-sdwan
+name: Build-OpenWrt-SDWAN
 
 on:
   #push:
