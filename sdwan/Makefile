@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sdwan
-PKG_VERSION:=2.4.3
+PKG_VERSION:=25.9.10
 
 ifeq ($(ARCH),mipsel)
 	APP_ARCH:=mipsel
