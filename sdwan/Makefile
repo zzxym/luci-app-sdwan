@@ -48,7 +48,23 @@ endef
 
 define Build/Prepare
 	# 使用本仓库zip目录下的zip文件
-	cp -f $(TOPDIR)/feeds/packages_ci/sdwan/zip/$(PKG_NAME)-linux-$(APP_ARCH)-v$(PKG_VERSION).zip $(PKG_NAME)-$(PKG_VERSION).zip
+	# 检查是否存在TOPDIR/feeds/packages_ci/sdwan/zip/路径
+	if [ -d "$(TOPDIR)/feeds/packages_ci/sdwan/zip/" ]; then
+		ZIP_PATH="$(TOPDIR)/feeds/packages_ci/sdwan/zip/"
+	else
+		# 如果不存在，则使用项目根目录下的zip目录
+		ZIP_PATH="$(CURDIR)/../../zip/"
+	fi
+	
+	# 尝试两种文件名格式：带v前缀和不带v前缀
+	if [ -f "$${ZIP_PATH}$(PKG_NAME)-linux-$(APP_ARCH)-v$(PKG_VERSION).zip" ]; then
+		cp -f "$${ZIP_PATH}$(PKG_NAME)-linux-$(APP_ARCH)-v$(PKG_VERSION).zip" $(PKG_NAME)-$(PKG_VERSION).zip
+	elif [ -f "$${ZIP_PATH}$(PKG_NAME)-linux-$(APP_ARCH)-$(PKG_VERSION).zip" ]; then
+		cp -f "$${ZIP_PATH}$(PKG_NAME)-linux-$(APP_ARCH)-$(PKG_VERSION).zip" $(PKG_NAME)-$(PKG_VERSION).zip
+	else
+		echo "错误：找不到zip文件 $${ZIP_PATH}$(PKG_NAME)-linux-$(APP_ARCH)-[v]$(PKG_VERSION).zip" >&2
+		exit 1
+	fi
 	unzip -j $(PKG_NAME)-$(PKG_VERSION).zip -d $(PKG_BUILD_DIR)
 endef
 
