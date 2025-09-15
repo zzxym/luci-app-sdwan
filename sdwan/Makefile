@@ -7,7 +7,21 @@ PKG_NAME:=sdwan
 PKG_VERSION:=25.9.10
 
 include $(TOPDIR)/rules.mk
-include $(INCLUDE_DIR)/package.mk
+
+# 确保INCLUDE_DIR变量已定义
+INCLUDE_DIR ?= $(TOPDIR)/include
+
+# 检查并包含package.mk文件
+ifeq ($(wildcard $(INCLUDE_DIR)/package.mk),)
+  # 如果在INCLUDE_DIR中找不到，则尝试标准OpenWrt路径
+  ifeq ($(wildcard $(TOPDIR)/package/Makefile),)
+    $(error 错误: 无法找到package.mk文件，请确保在正确的OpenWrt SDK环境中构建)
+  else
+    include $(TOPDIR)/package/Makefile
+  endif
+else
+  include $(INCLUDE_DIR)/package.mk
+endif
 
 # 定义ARCH到APP_ARCH的映射
 ifeq ($(ARCH),mipsel)	APP_ARCH:=mipsel
