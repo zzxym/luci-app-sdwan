@@ -1,0 +1,7 @@
+
+config sdwan
+	option enabled '0'
+        option sdwanbin '/usr/bin/sdwan-core'
+
+config sdwanweb
+	option enabled '0'
