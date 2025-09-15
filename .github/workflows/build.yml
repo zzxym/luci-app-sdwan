@@ -1,7 +1,9 @@
 name: Build-OpenWrt-Sdwan
 
 on:
-  #push:
+  push:
+    branches:
+      - main  # 仅在推送到main分支时触发
   workflow_dispatch:
     inputs:
       tag:
