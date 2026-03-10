@@ -74,6 +74,7 @@ network_name = s:taboption("general", Value, "network_name", translate("Network 
         translate("The network name used to identify this VPN network (--network-name parameter)"))
 network_name.password = true
 network_name.placeholder = "sdwan-name"
+network_name.default = "guest"
 network_name.maxlength = 64
 network_name.validate = function(self, value)
     if value and value ~= "" and value:match("[^%w%-_]") then
@@ -87,6 +88,7 @@ network_secret = s:taboption("general", Value, "network_secret", translate("Netw
         translate("Network secret used to verify whether this node belongs to the VPN network (--network-secret parameter)"))
 network_secret.password = true
 network_secret.placeholder = "sdwan-password"
+network_secret.default = "Aa123456"
 network_secret.maxlength = 128
 network_secret:depends("etcmd", "etcmd")
 
@@ -110,19 +112,22 @@ ip6addr.placeholder = "2001:db8::1"
 ip6addr:depends("etcmd", "etcmd")
 
 peeradd = s:taboption("general", DynamicList, "peeradd", translate("Peer Nodes"),
-        translate("Initial connected peer nodes (-p parameter)<br>"
-                .. "Public server status check: <a href='https://uptime.sdwan.cn' target='_blank'>"
+        translate("Initial connected peer nodes (-p parameter)<br>" 
+                .. "Public server status check: <a href='https://uptime.sdwan.cn' target='_blank'>" 
                 .. "Click here to check</a>"))
-peeradd.placeholder = "sdwan.xiaolin.cc:10010"
-peeradd:value("sdwan.xiaolin.cc:10010", translate("Official Server - sdwan.xiaolin.cc:10010"))
+peeradd.placeholder = "tcp://sdwan.xiaolin.cc:10010"
+peeradd:value("tcp://sdwan.xiaolin.cc:10010", translate("Official Server - tcp://sdwan.xiaolin.cc:10010"))
+peeradd:value("udp://sdwan.xiaolin.cc:10010", translate("Official Server - udp://sdwan.xiaolin.cc:10010"))
+peeradd:value("tcp://oa.xiaolin.cc:10010", translate("Official Server - tcp://oa.xiaolin.cc:10010"))
+peeradd:value("udp://oa.xiaolin.cc:10010", translate("Official Server - udp://oa.xiaolin.cc:10010"))
 peeradd:depends("etcmd", "etcmd")
 
 --[=[
 external_node = s:taboption("general", Value, "external_node", translate("Shared Node Address"),
         translate("Use a public shared node to discover peer nodes, same function as the parameter above (-e parameter)"))
 external_node.default = ""
-external_node.placeholder = "sdwan.xiaolin.cc:10010"
-external_node:value("sdwan.xiaolin.cc:10010", translate("Official Server - sdwan.xiaolin.cc:10010"))
+external_node.placeholder = "tcp://sdwan.xiaolin.cc:10010"
+external_node:value("tcp://sdwan.xiaolin.cc:10010", translate("Official Server - tcp://sdwan.xiaolin.cc:10010"))
 external_node:depends("etcmd", "etcmd")
 ]=]
 
