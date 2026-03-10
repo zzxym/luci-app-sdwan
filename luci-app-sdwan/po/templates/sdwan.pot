@@ -26,7 +26,7 @@ msgstr ""
 msgid ""
 "A simple, secure, decentralized VPN solution for intranet penetration, "
 "implemented in Rust using the Tokio framework. Project URL: <a href="
-"\"https://github.com/sdwan/sdwan\" target=\"_blank\">github.com/"
+"\"https://github.com/zzxym/sdwan\" target=\"_blank\">github.com/"
 "sdwan/sdwan</a>&nbsp;&nbsp;<a href=\"http://sdwan.cn\" target="
 "\"_blank\">Official Documentation</a>&nbsp;&nbsp;<a href=\"http://qm.qq.com/"
 "cgi-bin/qm/qr?"
@@ -598,7 +598,7 @@ msgstr ""
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:106
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:113
-msgid "Official Server - tcp://public.sdwan.top:10010"
+msgid "Official Server - tcp://sdwan.xiaolin.cc:10010"
 msgstr ""
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:35
@@ -933,7 +933,7 @@ msgid ""
 "You can directly upload the binary programs sdwan-core and sdwan-cli, "
 "or a compressed .zip archive. Uploading a new version will automatically "
 "overwrite the old one. Download link: <a href='https://github.com/sdwan/"
-"sdwan/releases' target='_blank'>github.com/sdwan/sdwan</a><br>The "
+"sdwan/releases' target='_blank'>github.com/zzxym/sdwan</a><br>The "
 "uploaded files will be saved in the /tmp folder. If a custom program path is "
 "specified, the program will be automatically moved to that path when started."
 "<br>"

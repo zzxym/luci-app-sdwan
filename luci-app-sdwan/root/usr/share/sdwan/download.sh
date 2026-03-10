@@ -55,7 +55,7 @@ download_binary() {
 	local cpucore="$2"
 	local path="$3"
 	local proxys=$(get_proxy_list)
-	local download_url="https://github.com/sdwan/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip"
+	local download_url="https://github.com/zzxym/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip"
 	
 	mkdir -p "$path"
 	

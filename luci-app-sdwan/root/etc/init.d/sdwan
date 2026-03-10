@@ -93,12 +93,12 @@ check_bin() {
 		tag=$(uci -q get sdwan.@sdwan[0].fallback_version)
 		[ -z "$tag" ] && tag="v2.5.0"
 	fi
-	echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 开始在线下载${tag}版本，${proxy}https://github.com/sdwan/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip下载较慢耐心等候" >>/tmp/sdwan.log
-	echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 开始在线下载${tag}版本，${proxy}https://github.com/sdwan/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip下载较慢耐心等候" >>/tmp/sdwanweb.log
+	echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 开始在线下载${tag}版本，${proxy}https://github.com/zzxym/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip下载较慢耐心等候" >>/tmp/sdwan.log
+	echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 开始在线下载${tag}版本，${proxy}https://github.com/zzxym/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip下载较慢耐心等候" >>/tmp/sdwanweb.log
         mkdir -p "$path"
 	for proxy in $proxys ; do
-	        if curl -L -k -o /tmp/sdwan.zip --connect-timeout 10 --retry 3 "${proxy}https://github.com/sdwan/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip" || \
-		wget --no-check-certificate --timeout=10 --tries=3 -O /tmp/sdwan.zip "${proxy}https://github.com/sdwan/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip" ; then
+	        if curl -L -k -o /tmp/sdwan.zip --connect-timeout 10 --retry 3 "${proxy}https://github.com/zzxym/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip" || \
+		wget --no-check-certificate --timeout=10 --tries=3 -O /tmp/sdwan.zip "${proxy}https://github.com/zzxym/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip" ; then
 			unzip -j -q -o /tmp/sdwan.zip -d /tmp
 	         	chmod +x /tmp/sdwan-core /tmp/sdwan-cli /tmp/sdwan-web /tmp/sdwan-web-embed || true
 	         	if [ "$(uci -q get sdwan.@sdwan[0].enabled)" = "1" ] ; then
@@ -108,7 +108,7 @@ check_bin() {
 	         		if [ "$($sdwanbin -h 2>&1 | wc -l)" -gt 3 ] ; then
                    			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : ${sdwanbin} 下载成功" >>/tmp/sdwan.log
                  		else
-                    			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : ${proxy}https://github.com/sdwan/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip 下载不完整，请手动下载上传程序" >>/tmp/sdwan.log
+                    			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : ${proxy}https://github.com/zzxym/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip 下载不完整，请手动下载上传程序" >>/tmp/sdwan.log
                  		fi
 	         	fi
 	         	if [ "$(uci -q get sdwan.@sdwan[0].web_enabled)" = "1" ] ; then
@@ -117,15 +117,15 @@ check_bin() {
 	         		if [ "$($webbin -h 2>&1 | wc -l)" -gt 3 ] ; then
 					echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : ${webbin} 下载成功" >>/tmp/sdwanweb.log
                  		else
-					echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : ${proxy}https://github.com/sdwan/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip 下载不完整，请手动下载上传程序" >>/tmp/sdwanweb.log
+					echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : ${proxy}https://github.com/zzxym/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip 下载不完整，请手动下载上传程序" >>/tmp/sdwanweb.log
                  		fi
 	         	fi
                  	
                 	rm -rf /tmp/sdwan.zip 
 			break
  		 else
-			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : ${proxy}https://github.com/sdwan/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip 下载失败，请手动下载上传程序" >>/tmp/sdwan.log
-			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : ${proxy}https://github.com/sdwan/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip 下载失败，请手动下载上传程序" >>/tmp/sdwanweb.log
+			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : ${proxy}https://github.com/zzxym/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip 下载失败，请手动下载上传程序" >>/tmp/sdwan.log
+			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : ${proxy}https://github.com/zzxym/sdwan/releases/download/${tag}/sdwan-linux-${cpucore}-${tag}.zip 下载失败，请手动下载上传程序" >>/tmp/sdwanweb.log
 		fi
 	done
 }

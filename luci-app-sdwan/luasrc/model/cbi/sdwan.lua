@@ -3,7 +3,7 @@ local nixio = require "nixio"
 
 m = Map("sdwan")
 m.description = translate("A simple, secure, decentralized VPN solution for intranet penetration, implemented in Rust using the Tokio framework. "
-        .. "Project URL: <a href=\"https://github.com/sdwan/sdwan\" target=\"_blank\">github.com/sdwan/sdwan</a>&nbsp;&nbsp;"
+        .. "Project URL: <a href=\"https://github.com/zzxym/sdwan\" target=\"_blank\">github.com/zzxym/sdwan</a>&nbsp;&nbsp;"
         .. "<a href=\"http://sdwan.cn\" target=\"_blank\">Official Documentation</a>&nbsp;&nbsp;"
         .. "<a href=\"http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=jhP2Z4UsEZ8wvfGPLrs0VwLKn_uz0Q_p&authKey=OGKSQLfg61YPCpVQuvx%2BxE7hUKBVBEVi9PljrDKbHlle6xqOXx8sOwPPTncMambK&noverify=0&group_code=949700262\" target=\"_blank\">QQ Group</a>&nbsp;&nbsp;")
   
@@ -536,7 +536,7 @@ upload.default = ""
 upload.template = "sdwan/other_upload"
 upload.description = translate("You can directly upload the binary programs sdwan-core and sdwan-cli, or a compressed .zip archive. "
         .. "Uploading a new version will automatically overwrite the old one. Download link: "
-        .. "<a href='https://github.com/sdwan/sdwan/releases' target='_blank'>github.com/sdwan/sdwan</a><br>"
+        .. "<a href='https://github.com/zzxym/sdwan/releases' target='_blank'>github.com/zzxym/sdwan</a><br>"
         .. "The uploaded files will be saved in the /tmp folder. If a custom program path is specified, "
         .. "the program will be automatically moved to that path when started.<br>")
 local um = s:taboption("upload",DummyValue, "", nil)
