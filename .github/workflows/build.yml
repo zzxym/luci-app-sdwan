@@ -1,4 +1,4 @@
-name: Build-OpenWrt-EasyTier
+name: Build-OpenWrt-SDWAN
 
 on:
   #push:
@@ -71,7 +71,7 @@ jobs:
           
       - name: Overwrite i18n file
         run: |
-          cat > luci-app-easytier/root/etc/uci-defaults/luci-i18n-easytier-zh-cn << 'EOF'
+          cat > luci-app-sdwan/root/etc/uci-defaults/luci-i18n-sdwan-zh-cn << 'EOF'
           #!/bin/sh
           exit 0
           EOF
@@ -81,7 +81,7 @@ jobs:
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
           FEEDNAME: packages_ci
-          PACKAGES: easytier luci-app-easytier
+          PACKAGES: sdwan luci-app-sdwan
           #NO_DEFAULT_FEEDS: 1
           NO_REFRESH_CHECK: 1
           NO_SHFMT_CHECK: 1
@@ -112,7 +112,7 @@ jobs:
           mkdir -p release
           for dir in artifacts/*; do
             name=$(basename "$dir")
-            zip -j "release/EasyTier-${{ env.TAG }}-${name}.zip" "$dir"/*
+            zip -j "release/SDWAN-${{ env.TAG }}-${name}.zip" "$dir"/*
           done
           echo "build_time=$(TZ=UTC-8 date '+%Y年%m月%d日%H:%M:%S' | jq -sRr @uri)" >> $GITHUB_ENV
 
@@ -122,12 +122,12 @@ jobs:
             token: ${{ secrets.GITHUB_TOKEN }}
             body: |
 
-             > ### ![](https://img.shields.io/badge/%E7%BC%96%E8%AF%91%E6%97%B6%E9%97%B4-${{ env.build_time }}-easytier?logo=github&labelColor=%E9%A1%BB)![](https://img.shields.io/github/downloads/${{ github.repository }}/${{ env.TAG }}/total?label=%E4%B8%8B%E8%BD%BD%E6%AC%A1%E6%95%B0&logo=github)
+             > ### ![](https://img.shields.io/badge/%E7%BC%96%E8%AF%91%E6%97%B6%E9%97%B4-${{ env.build_time }}-sdwan?logo=github&labelColor=%E9%A1%BB)![](https://img.shields.io/github/downloads/${{ github.repository }}/${{ env.TAG }}/total?label=%E4%B8%8B%E8%BD%BD%E6%AC%A1%E6%95%B0&logo=github)
 
              - 其中 **`22.03.7`** 里面是ipk安装包 **`SNAPSHOT`** 里面是apk安装包
 
              - **`*.apk` 是OpenWrt新版的APK包** 对于apk包跳过证书命令
-             `apk add --allow-untrusted luci-app-easytier.apk`
+             `apk add --allow-untrusted luci-app-sdwan.apk`
 
              ${{ github.event.inputs.text }}
            
