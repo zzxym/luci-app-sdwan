@@ -253,12 +253,12 @@ msgstr "默认协议"
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:214
 msgid ""
 "Defines the URL of the VPN portal, allowing other VPN clients to connect."
-"<br>Example: wg://0.0.0.0:11011/10.14.14.0/24 means the VPN portal is a "
-"WireGuard server listening on vpn.example.com:11010, and the VPN clients are "
+"<br>Example: wg://0.0.0.0:10011/10.14.14.0/24 means the VPN portal is a "
+"WireGuard server listening on vpn.example.com:10010, and the VPN clients are "
 "in the 10.14.14.0/24 network (--vpn-portal parameter)"
 msgstr ""
-"定义 VPN 门户的 URL，允许其他 VPN 客户端连接。<br> 示例：wg://0.0.0.0:11011/10.14.14.0/24，"
-"表示 VPN 门户是一个在 vpn.example.com:11010 上监听的 WireGuard 服务器，并且 VPN 客户端位于 10.14.14.0/24 网络中（--vpn-portal 参数）"
+"定义 VPN 门户的 URL，允许其他 VPN 客户端连接。<br> 示例：wg://0.0.0.0:10011/10.14.14.0/24，"
+"表示 VPN 门户是一个在 vpn.example.com:10010 上监听的 WireGuard 服务器，并且 VPN 客户端位于 10.14.14.0/24 网络中（--vpn-portal 参数）"
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:284
 msgid "Disable Built-in NAT"
@@ -608,8 +608,8 @@ msgstr "关闭"
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:106
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:113
-msgid "Official Server - tcp://public.sdwan.top:11010"
-msgstr "官方服务器 - tcp://public.sdwan.top:11010"
+msgid "Official Server - tcp://public.sdwan.top:10010"
+msgstr "官方服务器 - tcp://public.sdwan.top:10010"
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:35
 msgid ""
@@ -766,10 +766,10 @@ msgstr "TCP/UDP端口"
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:150
 msgid ""
-"TCP/UDP protocol port number: 11010 means TCP/UDP will listen on port 11010."
+"TCP/UDP protocol port number: 10010 means TCP/UDP will listen on port 10010."
 "<br>If this is the Web configuration in the config file, please fill in the "
 "same listening port for firewall allowance."
-msgstr "tcp/udp协议，端口号：11010，表示 tcp/udp 将在 11010 上监听 <br>如果是配置文件Web配置请填写一样的监听端口用于防火墙放行"
+msgstr "tcp/udp协议，端口号：10010，表示 tcp/udp 将在 10010 上监听 <br>如果是配置文件Web配置请填写一样的监听端口用于防火墙放行"
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:95
 msgid ""
@@ -882,10 +882,10 @@ msgstr "WS端口"
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:158
 msgid ""
-"WS protocol port number: 11011 means WS will listen on port 11011.<br>If "
+"WS protocol port number: 10011 means WS will listen on port 10011.<br>If "
 "this is the Web configuration in the config file, please fill in the same "
 "listening port for firewall allowance."
-msgstr "ws协议，端口号：11011，表示 ws 将在 11011 上监听 <br>如果是配置文件Web配置请填写一样的监听端口用于防火墙放行"
+msgstr "ws协议，端口号：10011，表示 ws 将在 10011 上监听 <br>如果是配置文件Web配置请填写一样的监听端口用于防火墙放行"
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:165
 msgid "WSS Port"
@@ -893,10 +893,10 @@ msgstr "WSS端口"
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:166
 msgid ""
-"WSS protocol port number: 11012 means WSS will listen on port 11012.<br>If "
+"WSS protocol port number: 10012 means WSS will listen on port 10012.<br>If "
 "this is the Web configuration in the config file, please fill in the same "
 "listening port for firewall allowance."
-msgstr "wss协议，端口号：11012，表示 wss 将在 11012 上监听 <br>如果是配置文件Web配置请填写一样的监听端口用于防火墙放行"
+msgstr "wss协议，端口号：10012，表示 wss 将在 10012 上监听 <br>如果是配置文件Web配置请填写一样的监听端口用于防火墙放行"
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:365
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:730
@@ -941,10 +941,10 @@ msgstr "白名单网络"
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:174
 msgid ""
-"WireGuard protocol port number: 11011 means WG will listen on port 11011."
+"WireGuard protocol port number: 10011 means WG will listen on port 10011."
 "<br>If this is the Web configuration in the config file, please fill in the "
 "same listening port for firewall allowance."
-msgstr "WireGuard协议，端口号：11011，表示 wg 将在 11011 上监听 <br>如果是配置文件Web配置请填写一样的监听端口用于防火墙放行"
+msgstr "WireGuard协议，端口号：10011，表示 wg 将在 10011 上监听 <br>如果是配置文件Web配置请填写一样的监听端口用于防火墙放行"
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:360
 msgid ""
