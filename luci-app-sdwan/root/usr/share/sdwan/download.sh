@@ -29,14 +29,14 @@ get_latest_version() {
 	
 	if [ -z "$curltest" ] || [ ! -s "$(which curl)" ]; then
 		tag=$(wget --no-check-certificate -T 5 -t 3 --user-agent "$user_agent" --max-redirect=0 --output-document=- \
-			https://api.github.com/repos/sdwan/sdwan/releases/latest 2>&1 | grep 'tag_name' | cut -d\" -f4)
+			https://api.github.com/repos//zzxym/sdwan/releases/latest 2>&1 | grep 'tag_name' | cut -d\" -f4)
 		[ -z "$tag" ] && tag=$(wget --no-check-certificate -T 5 -t 3 --user-agent "$user_agent" --quiet --output-document=- \
-			https://api.github.com/repos/sdwan/sdwan/releases/latest 2>&1 | grep 'tag_name' | cut -d\" -f4)
+			https://api.github.com/repos//zzxym/sdwan/releases/latest 2>&1 | grep 'tag_name' | cut -d\" -f4)
 	else
 		tag=$(curl -k --connect-timeout 3 --user-agent "$user_agent" \
-			https://api.github.com/repos/sdwan/sdwan/releases/latest 2>&1 | grep 'tag_name' | cut -d\" -f4)
+			https://api.github.com/repos//zzxym/sdwan/releases/latest 2>&1 | grep 'tag_name' | cut -d\" -f4)
 		[ -z "$tag" ] && tag=$(curl -Lk --connect-timeout 3 --user-agent "$user_agent" -s \
-			https://api.github.com/repos/sdwan/sdwan/releases/latest 2>&1 | grep 'tag_name' | cut -d\" -f4)
+			https://api.github.com/repos//zzxym/sdwan/releases/latest 2>&1 | grep 'tag_name' | cut -d\" -f4)
 	fi
 	
 	# 如果获取失败，从 UCI 配置或使用默认版本

@@ -33,9 +33,9 @@ btncq.write = function()
 end
 
 etcmd = s:taboption("general", ListValue, "etcmd", translate("Startup Method"),
-        translate("Official Web Console: <a href=\"https://sdwan.cn/web\" target=\"_blank\">https://sdwan.cn/web</a><br>"
-                .. "Official Configuration File Generator: <a href=\"https://sdwan.cn/web/index.html#/config_generator\" target=\"_blank\">"
-                .. "https://sdwan.cn/web/index.html#/config_generator</a><br>Please note to set the RPC port to 15888"))
+        translate("Official Web Console: <a href=\"https://sdwan.xiaolin.cc/web\" target=\"_blank\">https://sdwan.xiaolin.cc/web</a><br>"
+                .. "Official Configuration File Generator: <a href=\"https://sdwan.xiaolin.cc/web/index.html#/config_generator\" target=\"_blank\">"
+                .. "https://sdwan.xiaolin.cc/web/index.html#/config_generator</a><br>Please note to set the RPC port to 15888"))
 etcmd.default = "etcmd"
 etcmd:value("etcmd", translate("Default"))
 etcmd:value("config", translate("Configuration File"))
@@ -66,7 +66,7 @@ web_config = s:taboption("general", Value, "web_config", translate("Web Server A
         translate("Web configuration server address. (-w parameter)<br>"
                 .. "For a self-hosted Web server, use the format: udp://server_address:22020/username<br>"
                 .. "For the official Web server, use the format: username<br>"
-                .. "Official Web Console: <a href='https://sdwan.cn/web'>sdwan.cn/web</a>"))
+                .. "Official Web Console: <a href='https://sdwan.xiaolin.cc/web'>sdwan.xiaolin.cc/web</a>"))
 web_config.placeholder = "admin"
 web_config:depends("etcmd", "web")
 
