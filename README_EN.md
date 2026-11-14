@@ -1,4 +1,4 @@
-![luci-app-sdwan](https://socialify.git.ci/zzxym/luci-app-sdwan/image?custom_description=SDWAN+Installation+Packages+%28IPK+and+APK%29+for+OpenWrt&description=1&font=JetBrains+Mono&forks=1&issues=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F169161851%3Fs%3D200%26v%3D4&name=1&pulls=1&stargazers=1&theme=Auto)
+![luci-app-sdwan](https://socialify.git.ci/zzxym/luci-app-sdwan/image?custom_description=SDWAN+Installation+Packages+%28IPK+and+APK%29+for+OpenWrt&description=1&font=JetBrains+Mono&forks=1&issues=1&logo=https%3A%2F%2Fraw.githubusercontent.com%2Fzzxym%2Fluci-app-sdwan%2Fsdwan-v2.6.4%2Fluci-app-sdwan%2Fhtdocs%2Fluci-static%2Fresources%2Ficons%2Fsdwan.png&name=1&pulls=1&stargazers=1&theme=Auto)
 
 English | [简体中文](README.md)
 

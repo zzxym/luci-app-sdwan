@@ -8,6 +8,13 @@ PKG_VERSION:=$(or $(SDWAN_VERSION),2.6.4)
 RELEASE_BASE_URL:=$(or $(SDWAN_RELEASE_BASE_URL),https://github.com/zzxym/sdwan)
 # Release tag / asset suffix; override with SDWAN_RELEASE_TAG.
 RELEASE_TAG:=$(or $(SDWAN_RELEASE_TAG),sdwan-v$(PKG_VERSION))
+# Resolve the download base at make level. Shell variables in Build/Prepare get
+# expanded twice by OpenWrt, which eats the leading character of $RELEASE_BASE_URL.
+ifneq (,$(filter https://github.com/%,$(RELEASE_BASE_URL)))
+RELEASE_DOWNLOAD_BASE:=$(RELEASE_BASE_URL)/releases/download
+else
+RELEASE_DOWNLOAD_BASE:=$(RELEASE_BASE_URL)
+endif
 
 ifeq ($(ARCH),mipsel)
 	APP_ARCH:=mipsel
@@ -69,13 +76,8 @@ endef
 define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
 	if [ ! -f $(PKG_BUILD_DIR)/sdwan-core ]; then \
-		RELEASE_BASE_URL="$(RELEASE_BASE_URL)"; \
-		case "$$RELEASE_BASE_URL" in \
-			https://github.com/*/*) ASSET_BASE="$$RELEASE_BASE_URL/releases/download" ;; \
-			*) ASSET_BASE="$$RELEASE_BASE_URL" ;; \
-		esac; \
-		wget "$$ASSET_BASE/$(RELEASE_TAG)/sdwan-linux-$(APP_ARCH)-$(RELEASE_TAG).zip" -O $(PKG_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION).zip; \
-		unzip -o -j $(PKG_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION).zip -d $(PKG_BUILD_DIR); \
+		wget "$(RELEASE_DOWNLOAD_BASE)/$(RELEASE_TAG)/sdwan-linux-$(APP_ARCH)-$(RELEASE_TAG).zip" -O $(PKG_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION).zip || exit 1; \
+		unzip -o -j $(PKG_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION).zip -d $(PKG_BUILD_DIR) || exit 1; \
 		rm -f $(PKG_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION).zip; \
 	fi
 endef
