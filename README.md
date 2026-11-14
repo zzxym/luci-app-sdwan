@@ -1,12 +1,12 @@
-![luci-app-easytier](https://socialify.git.ci/EasyTier/luci-app-easytier/image?description=1&font=JetBrains+Mono&forks=1&issues=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F169161851%3Fs%3D200%26v%3D4&name=1&pulls=1&stargazers=1&theme=Auto)
+![luci-app-sdwan](https://socialify.git.ci/zzxym/luci-app-sdwan/image?description=1&font=JetBrains+Mono&forks=1&issues=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F169161851%3Fs%3D200%26v%3D4&name=1&pulls=1&stargazers=1&theme=Auto)
 
 [English](README_EN.md) | 简体中文
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![OpenWrt](https://img.shields.io/badge/OpenWrt-18.06--26.x-orange.svg)](https://openwrt.org)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/EasyTier/luci-app-easytier)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/zzxym/luci-app-sdwan)
 
-OpenWrt LuCI界面，用于管理 [EasyTier](https://github.com/EasyTier/EasyTier) - 一个简单、安全、去中心化的内网穿透VPN组网方案。
+OpenWrt LuCI界面，用于管理 [SDWAN](https://github.com/zzxym/sdwan) - 一个简单、安全、去中心化的内网穿透VPN组网方案。
 
 ## UI 预览
 
@@ -40,26 +40,26 @@ OpenWrt LuCI界面，用于管理 [EasyTier](https://github.com/EasyTier/EasyTie
 
 ### 方式一：使用预编译包
 
-1. 从 [Releases](https://github.com/EasyTier/luci-app-easytier/releases) 下载对应架构的安装包
+1. 从 [Releases](https://github.com/zzxym/luci-app-sdwan/releases) 下载对应架构的安装包
 2. 上传到OpenWrt的 `/tmp` 目录
 3. 安装：
 
 ```bash
 # IPK包 (OpenWrt 22.03.x)
-opkg install /tmp/luci-app-easytier_*.ipk
+opkg install /tmp/luci-app-sdwan_*.ipk
 
 # APK包 (OpenWrt SNAPSHOT)
-apk add --allow-untrusted /tmp/luci-app-easytier_*.apk
+apk add --allow-untrusted /tmp/luci-app-sdwan_*.apk
 ```
 
 4. 刷新浏览器或重新登录LuCI界面
-5. 在 **VPN → EasyTier** 中上传EasyTier二进制程序
+5. 在 **VPN → SDWAN** 中上传SDWAN二进制程序
 
 ### 方式二：GitHub Actions自动编译
 
 1. Fork本项目
 2. 修改 `.github/workflows/build.yml` 中的架构列表（可选）
-3. 进入 Actions 页面，手动触发 `Build-OpenWrt-EasyTier` 工作流
+3. 进入 Actions 页面，手动触发 `Build-OpenWrt-SDWAN` 工作流
 4. 填写版本号（如 `v1.0.0`）和发布说明
 5. 等待编译完成，在 Releases 中下载
 
@@ -74,7 +74,7 @@ tar -xJf openwrt-sdk-*.tar.xz
 cd openwrt-sdk-*/
 
 # 2. 克隆项目
-git clone https://github.com/EasyTier/luci-app-easytier.git package/luci-app-easytier
+git clone https://github.com/zzxym/luci-app-sdwan.git package/luci-app-sdwan
 
 # 3. 更新feeds并配置
 ./scripts/feeds update -a
@@ -82,10 +82,10 @@ git clone https://github.com/EasyTier/luci-app-easytier.git package/luci-app-eas
 make defconfig
 
 # 4. 编译
-make package/luci-app-easytier/compile V=s
+make package/luci-app-sdwan/compile V=s
 
 # 5. 查找生成的ipk
-find bin/ -name "luci-app-easytier*.ipk"
+find bin/ -name "luci-app-sdwan*.ipk"
 ```
 
 ## 📦 依赖
@@ -103,11 +103,11 @@ opkg install kmod-tun
 
 ### 首次配置
 
-1. 安装插件后，进入 **VPN → EasyTier**
-2. 在 **上传程序** 页面上传EasyTier二进制文件或直接安装包含核心的ipk/apk包（easytier.ipk easytier.apk）
-   - 支持单个文件：`easytier-core`, `easytier-cli`, `easytier-web-embed`
+1. 安装插件后，进入 **VPN → SDWAN**
+2. 在 **上传程序** 页面上传SDWAN二进制文件或直接安装包含核心的ipk/apk包（sdwan.ipk sdwan.apk）
+   - 支持单个文件：`sdwan-core`, `sdwan-cli`, `sdwan-web-embed`
    - 支持压缩包：`.zip`, `.tar.gz`, `.tar`
-3. 在 **EasyTier Core** 页面配置网络参数
+3. 在 **SDWAN Core** 页面配置网络参数
 4. 启用并保存配置
 
 ### 配置方式
@@ -115,15 +115,15 @@ opkg install kmod-tun
 支持两种配置方式：
 
 1. **命令行参数**：通过LuCI界面配置各项参数
-2. **配置文件**：使用 `/etc/easytier/config.toml` 配置文件
+2. **配置文件**：使用 `/etc/sdwan/config.toml` 配置文件
 
 ### 功能页面
 
 - **状态** - 查看运行状态、版本信息、连接信息和实时流量
-- **EasyTier Core** - 配置核心参数（网络名称、密钥、节点等）
-- **自建控制台** - 配置easytier-web控制台
+- **SDWAN Core** - 配置核心参数（网络名称、密钥、节点等）
+- **自建控制台** - 配置sdwan-web控制台
 - **日志** - 查看运行日志，支持级别过滤
-- **上传程序** - 上传和管理EasyTier二进制文件
+- **上传程序** - 上传和管理SDWAN二进制文件
 
 ## 🛠️ 开发指南
 
@@ -182,28 +182,28 @@ var msg = '<%=translate("Text")%>';
 ### 目录结构
 
 ```
-luci-app-easytier/
+luci-app-sdwan/
 ├── luasrc/
 │   ├── controller/
-│   │   └── easytier.lua          # 路由和API控制器
+│   │   └── sdwan.lua          # 路由和API控制器
 │   ├── model/cbi/
-│   │   ├── easytier.lua          # 配置页面
-│   │   └── easytier_status.lua   # 状态页面
-│   └── view/easytier/
-│       ├── easytier_status.htm   # 状态页面模板
-│       ├── easytier_log.htm      # 日志页面
-│       ├── easytier_upload.htm   # 上传页面
+│   │   ├── sdwan.lua          # 配置页面
+│   │   └── sdwan_status.lua   # 状态页面
+│   └── view/sdwan/
+│       ├── sdwan_status.htm   # 状态页面模板
+│       ├── sdwan_log.htm      # 日志页面
+│       ├── sdwan_upload.htm   # 上传页面
 │       └── ...
 ├── root/
 │   ├── etc/
-│   │   ├── config/easytier       # UCI配置文件
-│   │   ├── init.d/easytier       # 启动脚本
-│   │   └── easytier/             # 配置目录
-│   └── usr/share/easytier/
+│   │   ├── config/sdwan       # UCI配置文件
+│   │   ├── init.d/sdwan       # 启动脚本
+│   │   └── sdwan/             # 配置目录
+│   └── usr/share/sdwan/
 │       └── download.sh           # 下载脚本
 ├── po/
-│   ├── zh_Hans/easytier.po       # 简体中文翻译
-│   └── templates/easytier.pot    # 翻译模板
+│   ├── zh_Hans/sdwan.po       # 简体中文翻译
+│   └── templates/sdwan.pot    # 翻译模板
 └── Makefile                      # OpenWrt包定义
 ```
 
@@ -211,7 +211,7 @@ luci-app-easytier/
 
 ```lua
 -- API路径格式
-entry({"admin", "vpn", "easytier", "api_name"}, call("function_name")).leaf = true
+entry({"admin", "services", "sdwan", "api_name"}, call("function_name")).leaf = true
 
 -- 返回JSON格式
 function api_name()
@@ -244,11 +244,11 @@ rm -rf /tmp/luci-*
 
 ### util.pcdata 警告
 ```bash
-sed -i 's/util.pcdata/xml.pcdata/g' /usr/lib/lua/luci/model/cbi/easytier.lua
+sed -i 's/util.pcdata/xml.pcdata/g' /usr/lib/lua/luci/model/cbi/sdwan.lua
 ```
 
 ### 配置文件冲突
-升级时如果提示配置文件冲突，旧配置会保留，新配置保存为 `/etc/config/easytier-opkg`，可以忽略此报错。
+升级时如果提示配置文件冲突，旧配置会保留，新配置保存为 `/etc/config/sdwan-opkg`，可以忽略此报错。
 
 ## 📄 许可证
 
@@ -256,8 +256,10 @@ sed -i 's/util.pcdata/xml.pcdata/g' /usr/lib/lua/luci/model/cbi/easytier.lua
 
 ## 🔗 相关链接
 
-- [EasyTier 官方仓库](https://github.com/EasyTier/EasyTier)
-- [EasyTier 官方文档](https://easytier.cn)
+- [SDWAN 官方仓库](https://github.com/zzxym/luci-app-sdwan)
+- [SDWAN 程序发布仓库](https://github.com/zzxym/sdwan)
+- [EasyTier 上游仓库](https://github.com/EasyTier/EasyTier)
+- [SDWAN 官方文档](https://sdwan.xiaolin.cc)
 - [OpenWrt 官网](https://openwrt.org)
 
 ## 🤝 贡献

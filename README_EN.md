@@ -1,12 +1,12 @@
-![luci-app-easytier](https://socialify.git.ci/EasyTier/luci-app-easytier/image?custom_description=EasyTier+Installation+Packages+%28IPK+and+APK%29+for+OpenWrt&description=1&font=JetBrains+Mono&forks=1&issues=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F169161851%3Fs%3D200%26v%3D4&name=1&pulls=1&stargazers=1&theme=Auto)
+![luci-app-sdwan](https://socialify.git.ci/zzxym/luci-app-sdwan/image?custom_description=SDWAN+Installation+Packages+%28IPK+and+APK%29+for+OpenWrt&description=1&font=JetBrains+Mono&forks=1&issues=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F169161851%3Fs%3D200%26v%3D4&name=1&pulls=1&stargazers=1&theme=Auto)
 
 English | [简体中文](README.md)
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![OpenWrt](https://img.shields.io/badge/OpenWrt-18.06--26.x-orange.svg)](https://openwrt.org)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/EasyTier/luci-app-easytier)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/zzxym/luci-app-sdwan)
 
-OpenWrt LuCI web interface for managing [EasyTier](https://github.com/EasyTier/EasyTier) - a simple, secure, and decentralized VPN networking solution.
+OpenWrt LuCI web interface for managing [SDWAN](https://github.com/zzxym/sdwan) - a simple, secure, and decentralized VPN networking solution.
 
 ## ✨ Features
 
@@ -34,26 +34,26 @@ OpenWrt LuCI web interface for managing [EasyTier](https://github.com/EasyTier/E
 
 ### Method 1: Using Pre-compiled Packages
 
-1. Download the package for your architecture from [Releases](https://github.com/EasyTier/luci-app-easytier/releases)
+1. Download the package for your architecture from [Releases](https://github.com/zzxym/luci-app-sdwan/releases)
 2. Upload to OpenWrt's `/tmp` directory
 3. Install:
 
 ```bash
 # IPK package (OpenWrt 22.03.x)
-opkg install /tmp/luci-app-easytier_*.ipk
+opkg install /tmp/luci-app-sdwan_*.ipk
 
 # APK package (OpenWrt SNAPSHOT)
-apk add --allow-untrusted /tmp/luci-app-easytier_*.apk
+apk add --allow-untrusted /tmp/luci-app-sdwan_*.apk
 ```
 
 4. Refresh your browser or re-login to LuCI interface
-5. Upload EasyTier binary in **VPN → EasyTier**
+5. Upload SDWAN binary in **VPN → SDWAN**
 
 ### Method 2: GitHub Actions Auto-build
 
 1. Fork this repository
 2. Modify the architecture list in `.github/workflows/build.yml` (optional)
-3. Go to Actions page and manually trigger the `Build-OpenWrt-EasyTier` workflow
+3. Go to Actions page and manually trigger the `Build-OpenWrt-SDWAN` workflow
 4. Enter version number (e.g., `v1.0.0`) and release notes
 5. Wait for compilation to complete and download from Releases
 
@@ -68,7 +68,7 @@ tar -xJf openwrt-sdk-*.tar.xz
 cd openwrt-sdk-*/
 
 # 2. Clone the repository
-git clone https://github.com/EasyTier/luci-app-easytier.git package/luci-app-easytier
+git clone https://github.com/zzxym/luci-app-sdwan.git package/luci-app-sdwan
 
 # 3. Update feeds and configure
 ./scripts/feeds update -a
@@ -76,10 +76,10 @@ git clone https://github.com/EasyTier/luci-app-easytier.git package/luci-app-eas
 make defconfig
 
 # 4. Compile
-make package/luci-app-easytier/compile V=s
+make package/luci-app-sdwan/compile V=s
 
 # 5. Find the generated ipk
-find bin/ -name "luci-app-easytier*.ipk"
+find bin/ -name "luci-app-sdwan*.ipk"
 ```
 
 ## 📦 Dependencies
@@ -97,11 +97,11 @@ opkg install kmod-tun
 
 ### Initial Configuration
 
-1. After installing the plugin, navigate to **VPN → EasyTier**
-2. Upload EasyTier binary files on the **Upload Program** page, or directly install the ipk/apk package containing the core (easytier.ipk / easytier.apk)
-   - Supports single files: `easytier-core`, `easytier-cli`, `easytier-web-embed`
+1. After installing the plugin, navigate to **VPN → SDWAN**
+2. Upload SDWAN binary files on the **Upload Program** page, or directly install the ipk/apk package containing the core (sdwan.ipk / sdwan.apk)
+   - Supports single files: `sdwan-core`, `sdwan-cli`, `sdwan-web-embed`
    - Supports compressed packages: `.zip`, `.tar.gz`, `.tar`
-3. Configure network parameters on the **EasyTier Core** page
+3. Configure network parameters on the **SDWAN Core** page
 4. Enable and save the configuration
 
 ### Configuration Methods
@@ -109,15 +109,15 @@ opkg install kmod-tun
 Two configuration methods are supported:
 
 1. **Command-line parameters**: Configure parameters through the LuCI interface
-2. **Configuration file**: Use the `/etc/easytier/config.toml` configuration file
+2. **Configuration file**: Use the `/etc/sdwan/config.toml` configuration file
 
 ### Function Pages
 
 - **Status** - View running status, version info, connection info, and real-time traffic
-- **EasyTier Core** - Configure core parameters (network name, secret key, nodes, etc.)
-- **Self-hosted Console** - Configure easytier-web console
+- **SDWAN Core** - Configure core parameters (network name, secret key, nodes, etc.)
+- **Self-hosted Console** - Configure sdwan-web console
 - **Logs** - View running logs with level filtering support
-- **Upload Program** - Upload and manage EasyTier binary files
+- **Upload Program** - Upload and manage SDWAN binary files
 
 ## 🛠️ Development Guide
 
@@ -176,28 +176,28 @@ var msg = '<%=translate("Text")%>';
 ### Directory Structure
 
 ```
-luci-app-easytier/
+luci-app-sdwan/
 ├── luasrc/
 │   ├── controller/
-│   │   └── easytier.lua          # Routes and API controller
+│   │   └── sdwan.lua          # Routes and API controller
 │   ├── model/cbi/
-│   │   ├── easytier.lua          # Configuration page
-│   │   └── easytier_status.lua   # Status page
-│   └── view/easytier/
-│       ├── easytier_status.htm   # Status page template
-│       ├── easytier_log.htm      # Log page
-│       ├── easytier_upload.htm   # Upload page
+│   │   ├── sdwan.lua          # Configuration page
+│   │   └── sdwan_status.lua   # Status page
+│   └── view/sdwan/
+│       ├── sdwan_status.htm   # Status page template
+│       ├── sdwan_log.htm      # Log page
+│       ├── sdwan_upload.htm   # Upload page
 │       └── ...
 ├── root/
 │   ├── etc/
-│   │   ├── config/easytier       # UCI config file
-│   │   ├── init.d/easytier       # Init script
-│   │   └── easytier/             # Config directory
-│   └── usr/share/easytier/
+│   │   ├── config/sdwan       # UCI config file
+│   │   ├── init.d/sdwan       # Init script
+│   │   └── sdwan/             # Config directory
+│   └── usr/share/sdwan/
 │       └── download.sh           # Download script
 ├── po/
-│   ├── zh_Hans/easytier.po       # Simplified Chinese translation
-│   └── templates/easytier.pot    # Translation template
+│   ├── zh_Hans/sdwan.po       # Simplified Chinese translation
+│   └── templates/sdwan.pot    # Translation template
 └── Makefile                      # OpenWrt package definition
 ```
 
@@ -205,7 +205,7 @@ luci-app-easytier/
 
 ```lua
 -- API path format
-entry({"admin", "vpn", "easytier", "api_name"}, call("function_name")).leaf = true
+entry({"admin", "services", "sdwan", "api_name"}, call("function_name")).leaf = true
 
 -- Return JSON format
 function api_name()
@@ -236,11 +236,11 @@ rm -rf /tmp/luci-*
 
 ### util.pcdata Warning
 ```bash
-sed -i 's/util.pcdata/xml.pcdata/g' /usr/lib/lua/luci/model/cbi/easytier.lua
+sed -i 's/util.pcdata/xml.pcdata/g' /usr/lib/lua/luci/model/cbi/sdwan.lua
 ```
 
 ### Configuration File Conflict
-When upgrading, if a configuration file conflict is prompted, the old configuration will be retained and the new configuration saved as `/etc/config/easytier-opkg`. You can ignore this error.
+When upgrading, if a configuration file conflict is prompted, the old configuration will be retained and the new configuration saved as `/etc/config/sdwan-opkg`. You can ignore this error.
 
 ## 📄 License
 
@@ -248,8 +248,10 @@ This project is licensed under the [Apache License 2.0](LICENSE).
 
 ## 🔗 Related Links
 
-- [EasyTier Official Repository](https://github.com/EasyTier/EasyTier)
-- [EasyTier Official Documentation](https://easytier.cn)
+- [SDWAN Official Repository](https://github.com/zzxym/luci-app-sdwan)
+- [SDWAN Binary Releases](https://github.com/zzxym/sdwan)
+- [EasyTier Upstream Repository](https://github.com/EasyTier/EasyTier)
+- [SDWAN Official Documentation](https://sdwan.xiaolin.cc)
 - [OpenWrt Official Website](https://openwrt.org)
 
 ## 🤝 Contributing

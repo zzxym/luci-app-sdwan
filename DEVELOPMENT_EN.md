@@ -1,10 +1,10 @@
-![luci-app-easytier](https://socialify.git.ci/EasyTier/luci-app-easytier/image?custom_description=EasyTier+Installation+Packages+%28IPK+and+APK%29+for+OpenWrt&description=1&font=JetBrains+Mono&forks=1&issues=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F169161851%3Fs%3D200%26v%3D4&name=1&pulls=1&stargazers=1&theme=Auto)
+![luci-app-sdwan](https://socialify.git.ci/zzxym/luci-app-sdwan/image?custom_description=SDWAN+Installation+Packages+%28IPK+and+APK%29+for+OpenWrt&description=1&font=JetBrains+Mono&forks=1&issues=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F169161851%3Fs%3D200%26v%3D4&name=1&pulls=1&stargazers=1&theme=Auto)
 
 # Development Guide
 
 English | [简体中文](DEVELOPMENT.md)
 
-This document details the development standards and requirements for luci-app-easytier.
+This document details the development standards and requirements for luci-app-sdwan.
 
 ## Core Principles
 
@@ -90,13 +90,13 @@ User Request → Lua Controller → Render HTM Template → Return HTML
 ### File Organization
 
 ```
-controller/easytier.lua
+controller/sdwan.lua
 ├── index()                    # Route registration
 ├── act_status()              # Status API
 ├── upload_binary()           # Upload API
 └── ...
 
-view/easytier/status.htm
+view/sdwan/status.htm
 ├── Lua template code (<%...%>)
 ├── HTML structure
 ├── CSS styles (<style>)
@@ -122,7 +122,7 @@ local text = translate("Hello World")
 <h1><%:Hello World%></h1>
 
 <!-- Full syntax -->
-<p><%=translate("Welcome to EasyTier")%></p>
+<p><%=translate("Welcome to SDWAN")%></p>
 ```
 
 ### Usage in JavaScript
@@ -142,7 +142,7 @@ xhr.onload = function() {
 ### Translation Files
 
 ```po
-# po/zh_Hans/easytier.po
+# po/zh_Hans/sdwan.po
 msgid "Hello World"
 msgstr "你好世界"
 
@@ -155,11 +155,11 @@ msgstr "上传成功"
 ### Route Registration
 
 ```lua
--- controller/easytier.lua
+-- controller/sdwan.lua
 function index()
-    entry({"admin", "vpn", "easytier"}, firstchild(), _("EasyTier"), 46).dependent = true
-    entry({"admin", "vpn", "easytier", "status"}, cbi("easytier_status"), _("Status"), 1).leaf = true
-    entry({"admin", "vpn", "easytier", "api_status"}, call("act_status")).leaf = true
+    entry({"admin", "services", "sdwan"}, firstchild(), _("SDWAN"), 46).dependent = true
+    entry({"admin", "services", "sdwan", "status"}, cbi("sdwan_status"), _("Status"), 1).leaf = true
+    entry({"admin", "services", "sdwan", "api_status"}, call("act_status")).leaf = true
 end
 ```
 
@@ -172,8 +172,8 @@ function act_status()
     luci.http.prepare_content("application/json")
     luci.http.write_json({
         success = true,
-        running = luci.sys.call("pgrep easytier-core >/dev/null") == 0,
-        version = uci:get_first("easytier", "easytier", "version")
+        running = luci.sys.call("pgrep sdwan-core >/dev/null") == 0,
+        version = uci:get_first("sdwan", "sdwan", "version")
     })
 end
 ```
@@ -183,7 +183,7 @@ end
 ```javascript
 function updateStatus() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/cgi-bin/luci/admin/vpn/easytier/api_status', true);
+    xhr.open('GET', '/cgi-bin/luci/admin/services/sdwan/api_status', true);
     xhr.onload = function() {
         if (xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
@@ -205,30 +205,30 @@ function updateStatus() {
 local uci = require "luci.model.uci".cursor()
 
 -- Read single value
-local enabled = uci:get("easytier", "@easytier[0]", "enabled")
+local enabled = uci:get("sdwan", "@sdwan[0]", "enabled")
 
 -- Read first section
-local network_name = uci:get_first("easytier", "easytier", "network_name")
+local network_name = uci:get_first("sdwan", "sdwan", "network_name")
 
 -- Read list
-local peers = uci:get("easytier", "@easytier[0]", "peers") or {}
+local peers = uci:get("sdwan", "@sdwan[0]", "peers") or {}
 ```
 
 ### Saving Configuration
 
 ```lua
 -- Set value
-uci:set("easytier", "@easytier[0]", "enabled", "1")
-uci:set("easytier", "@easytier[0]", "network_name", "mynet")
+uci:set("sdwan", "@sdwan[0]", "enabled", "1")
+uci:set("sdwan", "@sdwan[0]", "network_name", "mynet")
 
 -- Set list
-uci:delete("easytier", "@easytier[0]", "peers")
+uci:delete("sdwan", "@sdwan[0]", "peers")
 for _, peer in ipairs(peers) do
-    uci:set_list("easytier", "@easytier[0]", "peers", peer)
+    uci:set_list("sdwan", "@sdwan[0]", "peers", peer)
 end
 
 -- Commit changes
-uci:commit("easytier")
+uci:commit("sdwan")
 ```
 
 ## Log Handling
@@ -237,7 +237,7 @@ uci:commit("easytier")
 
 ```lua
 function get_log()
-    local log_file = "/tmp/easytier.log"
+    local log_file = "/tmp/sdwan.log"
     local log = ""
     
     if luci.sys.call("[ -f '" .. log_file .. "' ]") == 0 then
@@ -254,7 +254,7 @@ end
 ```javascript
 function loadLog() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/cgi-bin/luci/admin/vpn/easytier/get_log', true);
+    xhr.open('GET', '/cgi-bin/luci/admin/services/sdwan/get_log', true);
     xhr.onload = function() {
         if (xhr.status === 200) {
             var lines = xhr.responseText.split('\n');

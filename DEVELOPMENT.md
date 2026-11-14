@@ -1,10 +1,10 @@
-![luci-app-easytier](https://socialify.git.ci/EasyTier/luci-app-easytier/image?description=1&font=JetBrains+Mono&forks=1&issues=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F169161851%3Fs%3D200%26v%3D4&name=1&pulls=1&stargazers=1&theme=Auto)
+![luci-app-sdwan](https://socialify.git.ci/zzxym/luci-app-sdwan/image?description=1&font=JetBrains+Mono&forks=1&issues=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F169161851%3Fs%3D200%26v%3D4&name=1&pulls=1&stargazers=1&theme=Auto)
 
 # 开发指南
 
 [English](DEVELOPMENT_EN.md) | 简体中文
 
-本文档详细说明 luci-app-easytier 的开发规范和要求。
+本文档详细说明 luci-app-sdwan 的开发规范和要求。
 
 ## 核心原则
 
@@ -90,13 +90,13 @@ xhr.send();
 ### 文件组织
 
 ```
-controller/easytier.lua
+controller/sdwan.lua
 ├── index()                    # 路由注册
 ├── act_status()              # 状态API
 ├── upload_binary()           # 上传API
 └── ...
 
-view/easytier/status.htm
+view/sdwan/status.htm
 ├── Lua 模板代码 (<%...%>)
 ├── HTML 结构
 ├── CSS 样式 (<style>)
@@ -122,7 +122,7 @@ local text = translate("Hello World")
 <h1><%:Hello World%></h1>
 
 <!-- 完整语法 -->
-<p><%=translate("Welcome to EasyTier")%></p>
+<p><%=translate("Welcome to SDWAN")%></p>
 ```
 
 ### JavaScript 中使用
@@ -142,7 +142,7 @@ xhr.onload = function() {
 ### 翻译文件
 
 ```po
-# po/zh_Hans/easytier.po
+# po/zh_Hans/sdwan.po
 msgid "Hello World"
 msgstr "你好世界"
 
@@ -155,11 +155,11 @@ msgstr "上传成功"
 ### 路由注册
 
 ```lua
--- controller/easytier.lua
+-- controller/sdwan.lua
 function index()
-    entry({"admin", "vpn", "easytier"}, firstchild(), _("EasyTier"), 46).dependent = true
-    entry({"admin", "vpn", "easytier", "status"}, cbi("easytier_status"), _("Status"), 1).leaf = true
-    entry({"admin", "vpn", "easytier", "api_status"}, call("act_status")).leaf = true
+    entry({"admin", "services", "sdwan"}, firstchild(), _("SDWAN"), 46).dependent = true
+    entry({"admin", "services", "sdwan", "status"}, cbi("sdwan_status"), _("Status"), 1).leaf = true
+    entry({"admin", "services", "sdwan", "api_status"}, call("act_status")).leaf = true
 end
 ```
 
@@ -172,8 +172,8 @@ function act_status()
     luci.http.prepare_content("application/json")
     luci.http.write_json({
         success = true,
-        running = luci.sys.call("pgrep easytier-core >/dev/null") == 0,
-        version = uci:get_first("easytier", "easytier", "version")
+        running = luci.sys.call("pgrep sdwan-core >/dev/null") == 0,
+        version = uci:get_first("sdwan", "sdwan", "version")
     })
 end
 ```
@@ -183,7 +183,7 @@ end
 ```javascript
 function updateStatus() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/cgi-bin/luci/admin/vpn/easytier/api_status', true);
+    xhr.open('GET', '/cgi-bin/luci/admin/services/sdwan/api_status', true);
     xhr.onload = function() {
         if (xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
@@ -205,30 +205,30 @@ function updateStatus() {
 local uci = require "luci.model.uci".cursor()
 
 -- 读取单个值
-local enabled = uci:get("easytier", "@easytier[0]", "enabled")
+local enabled = uci:get("sdwan", "@sdwan[0]", "enabled")
 
 -- 读取第一个section
-local network_name = uci:get_first("easytier", "easytier", "network_name")
+local network_name = uci:get_first("sdwan", "sdwan", "network_name")
 
 -- 读取列表
-local peers = uci:get("easytier", "@easytier[0]", "peers") or {}
+local peers = uci:get("sdwan", "@sdwan[0]", "peers") or {}
 ```
 
 ### 保存配置
 
 ```lua
 -- 设置值
-uci:set("easytier", "@easytier[0]", "enabled", "1")
-uci:set("easytier", "@easytier[0]", "network_name", "mynet")
+uci:set("sdwan", "@sdwan[0]", "enabled", "1")
+uci:set("sdwan", "@sdwan[0]", "network_name", "mynet")
 
 -- 设置列表
-uci:delete("easytier", "@easytier[0]", "peers")
+uci:delete("sdwan", "@sdwan[0]", "peers")
 for _, peer in ipairs(peers) do
-    uci:set_list("easytier", "@easytier[0]", "peers", peer)
+    uci:set_list("sdwan", "@sdwan[0]", "peers", peer)
 end
 
 -- 提交更改
-uci:commit("easytier")
+uci:commit("sdwan")
 ```
 
 ## 日志处理
@@ -237,7 +237,7 @@ uci:commit("easytier")
 
 ```lua
 function get_log()
-    local log_file = "/tmp/easytier.log"
+    local log_file = "/tmp/sdwan.log"
     local log = ""
     
     if luci.sys.call("[ -f '" .. log_file .. "' ]") == 0 then
@@ -254,7 +254,7 @@ end
 ```javascript
 function loadLog() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/cgi-bin/luci/admin/vpn/easytier/get_log', true);
+    xhr.open('GET', '/cgi-bin/luci/admin/services/sdwan/get_log', true);
     xhr.onload = function() {
         if (xhr.status === 200) {
             var lines = xhr.responseText.split('\n');
