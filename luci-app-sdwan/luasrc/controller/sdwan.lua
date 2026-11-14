@@ -677,7 +677,7 @@ function get_web_config()
 		web_api_addr = uci:get_first("sdwan", "sdwan", "web_api_addr") or "0.0.0.0",
 		web_html_addr = uci:get_first("sdwan", "sdwan", "web_html_addr") or "0.0.0.0",
 		web_fw_api = uci:get_first("sdwan", "sdwan", "web_fw_api") or "0",
-		web_api_host = uci:get_first("sdwan", "sdwan", "web_api_host") or "",
+		web_api_host = uci:get_first("sdwan", "sdwan", "web_api_host") or "http://oa.xiaolin.cc:11211",
 		web_geoip_db = uci:get_first("sdwan", "sdwan", "web_geoip_db") or "",
 		web_disable_registration = uci:get_first("sdwan", "sdwan", "web_disable_registration") or "0",
 		web_allow_auto_create_user = uci:get_first("sdwan", "sdwan", "web_allow_auto_create_user") or "0",

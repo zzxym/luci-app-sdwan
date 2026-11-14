@@ -1,190 +1,99 @@
 #!/bin/sh
 # SDWAN Firewall Management
-# Manages firewall rules and network interfaces for SDWAN
+# 虚拟网卡直接加入 lan 区域，与局域网天然互通，
+# 不再创建独立 zone，也不需要任何跨区域转发规则。
 
-# 引入工具函数
 . /usr/share/sdwan/utils.sh 2>/dev/null || true
 
-# 添加单条防火墙规则
-# 参数: $1=规则名称 $2=协议 $3=端口 $4=描述
-add_firewall_rule() {
-	local rule_name="$1"
-	local proto="$2"
-	local port="$3"
-	local desc="$4"
-	
-	[ -z "$port" ] && return 1
-	
-	log_message "INFO" "sdwan" "添加防火墙规则 ${rule_name} 放行端口 ${port}" "/tmp/sdwan.log"
-	
-	uci -q delete "firewall.${rule_name}"
-	uci set "firewall.${rule_name}=rule"
-	uci set "firewall.${rule_name}.name=${rule_name}"
-	uci set "firewall.${rule_name}.target=ACCEPT"
-	uci set "firewall.${rule_name}.src=wan"
-	uci set "firewall.${rule_name}.proto=${proto}"
-	uci set "firewall.${rule_name}.dest_port=${port}"
-	uci set "firewall.${rule_name}.enabled=1"
+if ! command -v log_message >/dev/null 2>&1; then
+	log_message() { :; }
+fi
+
+SDWAN_NETWORK="SDWAN"
+
+# 查找 lan 区域的 uci section（兼容 @zone[0] 与具名 section）
+sdwan_lan_zone() {
+	uci -q show firewall | sed -n "s/^firewall\.\([^.]*\)\.name='lan'$/\1/p" | head -n 1
 }
 
-# 设置所有 SDWAN 防火墙规则
-# 需要设置的变量: tcp_port, udp_port, ws_port, wss_port, wg_port, quic_port, socks_port
-set_firewall_rules() {
-	[ -n "$tcp_port" ] && add_firewall_rule "sdwan_tcp_udp" "tcp udp" "$tcp_port" "SDWAN TCP/UDP"
-	[ -n "$udp_port" ] && add_firewall_rule "sdwan_udp" "udp" "$udp_port" "SDWAN UDP"
-	[ -n "$ws_port" ] && add_firewall_rule "sdwan_ws" "tcp" "$ws_port" "SDWAN WS"
-	[ -n "$wss_port" ] && add_firewall_rule "sdwan_wss" "tcp" "$wss_port" "SDWAN WSS"
-	[ -n "$wg_port" ] && add_firewall_rule "sdwan_wg" "udp" "$wg_port" "SDWAN WG"
-	[ -n "$quic_port" ] && add_firewall_rule "sdwan_quic" "tcp udp" "$quic_port" "SDWAN QUIC"
-	[ -n "$socks_port" ] && add_firewall_rule "sdwan_socks5" "tcp" "$socks_port" "SDWAN SOCKS5"
+# 从 lan 区域移除虚拟网卡
+sdwan_detach_lan_zone() {
+	local zone
+	zone="$(sdwan_lan_zone)"
+	[ -n "$zone" ] && uci -q del_list "firewall.${zone}.network=${SDWAN_NETWORK}"
+	return 0
 }
 
-# 设置网络接口
-# 参数: $1=接口名称 $2=IP地址(可选)
-setup_network_interface() {
-	local tunname="${1:-tun0}"
-	local ipaddr="$2"
-	
-	uci -q delete network.SDWAN >/dev/null 2>&1
-	
-	if [ -z "$(uci -q get network.SDWAN)" ]; then
-		uci set network.SDWAN='interface'
-		if [ -z "$ipaddr" ]; then
-			uci set network.SDWAN.proto='none'
-		else
-			uci set network.SDWAN.proto='static'
-			uci set network.SDWAN.ipaddr="$ipaddr"
-			uci set network.SDWAN.netmask='255.0.0.0'
-		fi
-		log_message "INFO" "sdwan" "添加网络接口 SDWAN 绑定虚拟接口 ${tunname}" "/tmp/sdwan.log"
-		uci set network.SDWAN.device="$tunname"
-		uci set network.SDWAN.ifname="$tunname"
-	fi
+# 清理旧版本创建的独立 zone 与跨区域转发规则
+sdwan_remove_legacy_rules() {
+	uci -q delete firewall.sdwanzone
+	uci -q delete firewall.sdwanfwlan
+	uci -q delete firewall.sdwanfwwan
+	uci -q delete firewall.lanfwsdwan
+	uci -q delete firewall.wanfwsdwan
 }
 
-# 设置防火墙区域
-setup_firewall_zone() {
-	if [ -z "$(uci -q get firewall.sdwanzone)" ]; then
-		log_message "INFO" "sdwan" "添加防火墙规则，放行网络接口 SDWAN 允许出入转发，开启IP动态伪装 MSS钳制" "/tmp/sdwan.log"
-		uci set firewall.sdwanzone='zone'
-		uci set firewall.sdwanzone.input='ACCEPT'
-		uci set firewall.sdwanzone.output='ACCEPT'
-		uci set firewall.sdwanzone.forward='ACCEPT'
-		uci set firewall.sdwanzone.masq='1'
-		uci set firewall.sdwanzone.mtu_fix='1'
-		uci set firewall.sdwanzone.name='SDWAN'
-		uci set firewall.sdwanzone.network='SDWAN'
-	fi
+# 放行 WAN 侧主动连入的监听端口（外部节点接入用，与局域网互通无关）
+sdwan_add_wan_rule() {
+	local name="$1" proto="$2" port="$3"
+	[ -n "$port" ] || return 0
+	uci -q delete "firewall.${name}" >/dev/null 2>&1
+	uci set "firewall.${name}=rule"
+	uci set "firewall.${name}.name=${name}"
+	uci set "firewall.${name}.target=ACCEPT"
+	uci set "firewall.${name}.src=wan"
+	uci set "firewall.${name}.proto=${proto}"
+	uci set "firewall.${name}.dest_port=${port}"
+	uci set "firewall.${name}.enabled=1"
 }
 
-# 设置转发规则
-# 参数: $1=et_forward 配置值
-setup_forwarding_rules() {
-	local et_forward="$1"
-	
-	if [ "${et_forward#*etfwlan}" != "$et_forward" ]; then
-		log_message "INFO" "sdwan" "允许从虚拟网络 SDWAN 到局域网 lan 的流量" "/tmp/sdwan.log"
-		uci set firewall.sdwanfwlan=forwarding
-		uci set firewall.sdwanfwlan.dest='lan'
-		uci set firewall.sdwanfwlan.src='SDWAN'
+sdwan_allow_wan_ports() {
+	sdwan_add_wan_rule sdwan_tcp_udp "tcp udp" "$tcp_port"
+	sdwan_add_wan_rule sdwan_ws "tcp" "$ws_port"
+	sdwan_add_wan_rule sdwan_wss "tcp" "$wss_port"
+	sdwan_add_wan_rule sdwan_wg "udp" "$wg_port"
+	sdwan_add_wan_rule sdwan_quic "tcp udp" "$quic_port"
+	sdwan_add_wan_rule sdwan_socks5 "tcp" "$socks_port"
+}
+
+# 创建虚拟网卡接口并加入 lan 区域
+# 参数: $1=tunname $2=ipaddr(可空) $3=netmask
+setup_sdwan_lan_zone() {
+	local tunname="${1:-tun0}" ipaddr="$2" netmask="${3:-255.0.0.0}" zone
+
+	uci -q delete "network.${SDWAN_NETWORK}" >/dev/null 2>&1
+	uci set "network.${SDWAN_NETWORK}=interface"
+	if [ -z "$ipaddr" ]; then
+		uci set "network.${SDWAN_NETWORK}.proto=none"
 	else
-		uci -q delete firewall.sdwanfwlan
+		uci set "network.${SDWAN_NETWORK}.proto=static"
+		uci set "network.${SDWAN_NETWORK}.ipaddr=${ipaddr}"
+		uci set "network.${SDWAN_NETWORK}.netmask=${netmask}"
 	fi
-	
-	if [ "${et_forward#*etfwwan}" != "$et_forward" ]; then
-		log_message "INFO" "sdwan" "允许从虚拟网络 SDWAN 到广域网 wan 的流量" "/tmp/sdwan.log"
-		uci set firewall.sdwanfwwan=forwarding
-		uci set firewall.sdwanfwwan.dest='wan'
-		uci set firewall.sdwanfwwan.src='SDWAN'
+	uci set "network.${SDWAN_NETWORK}.device=${tunname}"
+	uci set "network.${SDWAN_NETWORK}.ifname=${tunname}"
+
+	sdwan_remove_legacy_rules
+	zone="$(sdwan_lan_zone)"
+	if [ -n "$zone" ]; then
+		uci -q del_list "firewall.${zone}.network=${SDWAN_NETWORK}"
+		uci add_list "firewall.${zone}.network=${SDWAN_NETWORK}"
+		log_message "INFO" "sdwan" "虚拟网卡 ${tunname} 已加入 lan 区域，与局域网直接互通" "/tmp/sdwan.log"
 	else
-		uci -q delete firewall.sdwanfwwan
-	fi
-	
-	if [ "${et_forward#*lanfwet}" != "$et_forward" ]; then
-		log_message "INFO" "sdwan" "允许从局域网 lan 到虚拟网络 SDWAN 的流量" "/tmp/sdwan.log"
-		uci set firewall.lanfwsdwan=forwarding
-		uci set firewall.lanfwsdwan.dest='SDWAN'
-		uci set firewall.lanfwsdwan.src='lan'
-	else
-		uci -q delete firewall.lanfwsdwan
-	fi
-	
-	if [ "${et_forward#*wanfwet}" != "$et_forward" ]; then
-		log_message "INFO" "sdwan" "允许从广域网 wan 到虚拟网络 SDWAN 的流量" "/tmp/sdwan.log"
-		uci set firewall.wanfwsdwan=forwarding
-		uci set firewall.wanfwsdwan.dest='SDWAN'
-		uci set firewall.wanfwsdwan.src='wan'
-	else
-		uci -q delete firewall.wanfwsdwan
+		log_message "WARN" "sdwan" "未找到 lan 区域，请手动将 ${SDWAN_NETWORK} 加入防火墙区域" "/tmp/sdwan.log"
 	fi
 }
 
-# 清理所有 SDWAN 防火墙规则
-clean_firewall_rules() {
-	uci -q delete network.SDWAN >/dev/null 2>&1
-	uci -q delete firewall.sdwanzone >/dev/null 2>&1
-	uci -q delete firewall.sdwanfwlan >/dev/null 2>&1
-	uci -q delete firewall.sdwanfwwan >/dev/null 2>&1
-	uci -q delete firewall.lanfwsdwan >/dev/null 2>&1
-	uci -q delete firewall.wanfwsdwan >/dev/null 2>&1
-	uci -q delete firewall.sdwan_tcp >/dev/null 2>&1
-	uci -q delete firewall.sdwan_udp >/dev/null 2>&1
-	uci -q delete firewall.sdwan_tcp_udp >/dev/null 2>&1
-	uci -q delete firewall.sdwan_wss >/dev/null 2>&1
-	uci -q delete firewall.sdwan_ws >/dev/null 2>&1
-	uci -q delete firewall.sdwan_wg >/dev/null 2>&1
-	uci -q delete firewall.sdwan_quic >/dev/null 2>&1
-	uci -q delete firewall.sdwan_wireguard >/dev/null 2>&1
-	uci -q delete firewall.sdwan_socks5 >/dev/null 2>&1
-	uci -q delete firewall.sdwan_webserver >/dev/null 2>&1
-	uci -q delete firewall.sdwan_webapi >/dev/null 2>&1
-	uci -q delete firewall.sdwan_webhtml >/dev/null 2>&1
-}
-
-# 设置 Web 控制台防火墙规则
-# 参数: $1=web_port $2=api_port $3=html_port $4=fw_web $5=fw_api
-setup_web_firewall() {
-	local web_port="$1"
-	local api_port="$2"
-	local html_port="$3"
-	local fw_web="$4"
-	local fw_api="$5"
-	
-	if [ -n "$web_port" ] && [ "$fw_web" = "1" ]; then
-		log_message "INFO" "sdwan" "添加防火墙规则 sdwan_web 放行服务端口 ${web_port}" "/tmp/sdwanweb.log"
-		uci -q delete firewall.sdwan_webserver
-		uci set firewall.sdwan_webserver=rule
-		uci set firewall.sdwan_webserver.name="sdwan_webserver"
-		uci set firewall.sdwan_webserver.target="ACCEPT"
-		uci set firewall.sdwan_webserver.src="wan"
-		uci set firewall.sdwan_webserver.proto="tcp udp"
-		uci set firewall.sdwan_webserver.dest_port="$web_port"
-		uci set firewall.sdwan_webserver.enabled="1"
-	fi
-	
-	if [ -n "$api_port" ] && [ "$fw_api" = "1" ]; then
-		log_message "INFO" "sdwan" "添加防火墙规则 sdwan_web 放行API端口 ${api_port}" "/tmp/sdwanweb.log"
-		uci -q delete firewall.sdwan_webapi
-		uci set firewall.sdwan_webapi=rule
-		uci set firewall.sdwan_webapi.name="sdwan_webapi"
-		uci set firewall.sdwan_webapi.target="ACCEPT"
-		uci set firewall.sdwan_webapi.src="wan"
-		uci set firewall.sdwan_webapi.proto="tcp"
-		uci set firewall.sdwan_webapi.dest_port="$api_port"
-		uci set firewall.sdwan_webapi.enabled="1"
-	fi
-	
-	if [ -n "$html_port" ] && [ "$fw_api" = "1" ] && [ "$html_port" != "$api_port" ]; then
-		log_message "INFO" "sdwan" "添加防火墙规则 sdwan_web 放行html端口 ${html_port}" "/tmp/sdwanweb.log"
-		uci -q delete firewall.sdwan_webhtml
-		uci set firewall.sdwan_webhtml=rule
-		uci set firewall.sdwan_webhtml.name="sdwan_webhtml"
-		uci set firewall.sdwan_webhtml.target="ACCEPT"
-		uci set firewall.sdwan_webhtml.src="wan"
-		uci set firewall.sdwan_webhtml.proto="tcp"
-		uci set firewall.sdwan_webhtml.dest_port="$html_port"
-		uci set firewall.sdwan_webhtml.enabled="1"
-	fi
+# 停止服务时清理全部改动
+cleanup_sdwan_firewall() {
+	local r
+	sdwan_detach_lan_zone
+	sdwan_remove_legacy_rules
+	uci -q delete "network.${SDWAN_NETWORK}" >/dev/null 2>&1
+	for r in sdwan_tcp_udp sdwan_udp sdwan_ws sdwan_wss sdwan_wg sdwan_quic \
+	         sdwan_wireguard sdwan_socks5 sdwan_webserver sdwan_webapi sdwan_webhtml; do
+		uci -q delete "firewall.${r}" >/dev/null 2>&1
+	done
 }
 
 # 应用防火墙和网络配置更改（延迟后台执行）

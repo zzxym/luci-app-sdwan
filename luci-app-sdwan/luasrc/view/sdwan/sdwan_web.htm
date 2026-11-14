@@ -553,7 +553,7 @@ input:disabled + .slider {
 
 			<div class="form-group">
 				<label for="web_api_host"><%:Default API Server URL%></label>
-				<input type="text" class="form-control" id="web_api_host" name="web_api_host" placeholder="http://192.168.1.1:11211">
+				<input type="text" class="form-control" id="web_api_host" name="web_api_host" placeholder="http://oa.xiaolin.cc:11211">
 				<span class="description"><%:The URL of the API server, used for connecting the web frontend%>. (--api-host <%:parameter%>)<br>
 				<%:Example%>: http://[<%:current device IP or domain%>]:[<%:API port%>]</span>
 			</div>
@@ -811,7 +811,7 @@ function loadConfig() {
 			document.getElementById('web_html_port').value = data.web_html_port || '11211';
 			document.getElementById('web_html_addr').value = data.web_html_addr || '0.0.0.0';
 			document.getElementById('web_fw_api').checked = data.web_fw_api === '1';
-			document.getElementById('web_api_host').value = data.web_api_host || '';
+			document.getElementById('web_api_host').value = data.web_api_host || 'http://oa.xiaolin.cc:11211';
 			document.getElementById('web_geoip_db').value = data.web_geoip_db || '';
 			document.getElementById('web_disable_registration').checked = data.web_disable_registration === '1';
 			document.getElementById('web_allow_auto_create_user').checked = data.web_allow_auto_create_user === '1';

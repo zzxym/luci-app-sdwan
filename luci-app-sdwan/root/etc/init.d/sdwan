@@ -265,149 +265,24 @@ get_etconfig() {
 }
 
 set_firewall() {
-		# Check if auto_config_firewall is enabled
-		if [ "$auto_config_firewall" != "1" ]; then
-			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 自动防火墙配置已禁用，跳过配置" >>/tmp/sdwan.log
-			return
-		fi
-		
-			if [ ! -z "$tcp_port" ] ; then
-		    		echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 添加防火墙规则 sdwan_tcp_udp 放行端口 ${tcp_port} " >>/tmp/sdwan.log
-                    		uci -q delete firewall.sdwan_tcp_udp
-		    		uci set firewall.sdwan_tcp_udp=rule
-		    		uci set firewall.sdwan_tcp_udp.name="sdwan_tcp_udp"
-		    		uci set firewall.sdwan_tcp_udp.target="ACCEPT"
-		    		uci set firewall.sdwan_tcp_udp.src="wan"
-		    		uci set firewall.sdwan_tcp_udp.proto="tcp udp"
-		    		uci set firewall.sdwan_tcp_udp.dest_port="$tcp_port"
-		    		uci set firewall.sdwan_tcp_udp.enabled="1"
-		 	fi
-		 	if [ ! -z "$udp_port" ] ; then
-		      		echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 添加防火墙规则 sdwan_udp 放行UDP端口 ${udp_port} " >>/tmp/sdwan.log
-                      		uci -q delete firewall.sdwan_udp
-		      		uci set firewall.sdwan_udp=rule
-		      		uci set firewall.sdwan_udp.name="sdwan_udp"
-		      		uci set firewall.sdwan_udp.target="ACCEPT"
-		      		uci set firewall.sdwan_udp.src="wan"
-		      		uci set firewall.sdwan_udp.proto="udp"
-		      		uci set firewall.sdwan_udp.dest_port="$udp_port"
-		      		uci set firewall.sdwan_udp.enabled="1"
-	           	fi
-                 	if [ ! -z "$wss_port" ] ; then
-		   		echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 添加防火墙规则 sdwan_wss 放行端口 ${wss_port} " >>/tmp/sdwan.log
-		    		uci -q delete firewall.sdwan_wss
-		    		uci set firewall.sdwan_wss=rule
-		    		uci set firewall.sdwan_wss.name="sdwan_wss"
-		    		uci set firewall.sdwan_wss.target="ACCEPT"
-		    		uci set firewall.sdwan_wss.src="wan"
-		    		uci set firewall.sdwan_wss.proto="tcp"
-		    		uci set firewall.sdwan_wss.dest_port="$wss_port"
-		    		uci set firewall.sdwan_wss.enabled="1"
-		 	fi
-                   	if [ ! -z "$ws_port" ] ; then
-		    		echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 添加防火墙规则 sdwan_ws 放行端口 ${ws_port} " >>/tmp/sdwan.log
-		    		uci -q delete firewall.sdwan_ws
-		    		uci set firewall.sdwan_ws=rule
-		    		uci set firewall.sdwan_ws.name="sdwan_ws"
-		   		uci set firewall.sdwan_ws.target="ACCEPT"
-		    		uci set firewall.sdwan_ws.src="wan"
-		    		uci set firewall.sdwan_ws.proto="tcp"
-		    		uci set firewall.sdwan_ws.dest_port="$ws_port"
-		    		uci set firewall.sdwan_ws.enabled="1"
-		   	fi
-                   	if [ ! -z "$wg_port" ] ; then
-		    		echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 添加防火墙规则 sdwan_wg 放行端口 ${wg_port} " >>/tmp/sdwan.log
-		    		uci -q delete firewall.sdwan_wg
-		    		uci set firewall.sdwan_wg=rule
-		    		uci set firewall.sdwan_wg.name="sdwan_wg"
-		    		uci set firewall.sdwan_wg.target="ACCEPT"
-		    		uci set firewall.sdwan_wg.src="wan"
-		    		uci set firewall.sdwan_wg.proto="udp"
-		    		uci set firewall.sdwan_wg.dest_port="$wg_port"
-		    		uci set firewall.sdwan_wg.enabled="1"
-		   	fi
-		   	if [ ! -z "$quic_port" ] ; then
-		    		echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 添加防火墙规则 sdwan_quic 放行端口 ${quic_port} " >>/tmp/sdwan.log
-		    		uci -q delete firewall.sdwan_quic
-		    		uci set firewall.sdwan_quic=rule
-		    		uci set firewall.sdwan_quic.name="sdwan_quic"
-		    		uci set firewall.sdwan_quic.target="ACCEPT"
-		    		uci set firewall.sdwan_quic.src="wan"
-		    		uci set firewall.sdwan_quic.proto="tcp udp"
-		    		uci set firewall.sdwan_quic.dest_port="$quic_port"
-		    		uci set firewall.sdwan_quic.enabled="1"
-		   	fi
-                
-		[ -z "$tunname" ] && tunname="tun0"
-		
-		# Check if auto_config_interface is enabled
-		if [ "$auto_config_interface" = "1" ]; then
-			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 自动网络接口配置已启用" >>/tmp/sdwan.log
-                	uci -q delete network.SDWAN >/dev/null 2>&1
-		        if [ -z "$(uci -q get network.SDWAN)" ];  then				
-			       uci set network.SDWAN='interface'
-                       		if [ -z "$ipaddr" ]; then
-						uci set network.SDWAN.proto='none'
-					else
-						uci set network.SDWAN.proto='static'
-						uci set network.SDWAN.ipaddr=$ipaddr
-						[ -z "$interface_netmask" ] && interface_netmask="255.0.0.0"
-						uci set network.SDWAN.netmask="$interface_netmask"
-			       		fi
-			       		echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 添加网络接口 SDWAN 绑定虚拟接口 ${tunname}，子网掩码: ${interface_netmask:-255.0.0.0}" >>/tmp/sdwan.log
-                       		uci set network.SDWAN.device="$tunname"
-                       		uci set network.SDWAN.ifname="$tunname"
-			fi
-			if [ -z "$(uci -q get firewall.sdwanzone)" ];  then
-					echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 添加防火墙规则，放行网络接口 SDWAN 允许出入转发，开启IP动态伪装 MSS钳制" >>/tmp/sdwan.log
-					uci set firewall.sdwanzone='zone'
-					uci set firewall.sdwanzone.input='ACCEPT'
-					uci set firewall.sdwanzone.output='ACCEPT'
-					uci set firewall.sdwanzone.forward='ACCEPT'
-					uci set firewall.sdwanzone.masq='1'
-                                	uci set firewall.sdwanzone.mtu_fix='1'
-					uci set firewall.sdwanzone.name='SDWAN'
-					uci set firewall.sdwanzone.network='SDWAN'
-			fi
-		else
-			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 自动网络接口配置已禁用，不创建网络接口" >>/tmp/sdwan.log
-			uci -q delete network.SDWAN >/dev/null 2>&1
-			uci -q delete firewall.sdwanzone >/dev/null 2>&1
-		fi
-		
-		et_forward="$(uci -q get sdwan.@sdwan[0].et_forward)"
-		if [ "${et_forward//etfwlan/}" != "$et_forward" ]; then
-			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 允许从虚拟网络 SDWAN 到局域网 lan 的流量" >>/tmp/sdwan.log
-			uci set firewall.sdwanfwlan=forwarding
-			uci set firewall.sdwanfwlan.dest='lan'
-			uci set firewall.sdwanfwlan.src='SDWAN'
-		else
-			uci -q delete firewall.sdwanfwlan
-		fi
-		if [ "${et_forward//etfwwan/}" != "$et_forward" ]; then
-			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 允许从虚拟网络 SDWAN 到广域网 wan 的流量" >>/tmp/sdwan.log
-			uci set firewall.sdwanfwwan=forwarding
-			uci set firewall.sdwanfwwan.dest='wan'
-			uci set firewall.sdwanfwwan.src='SDWAN'
-		else
-			uci -q delete firewall.sdwanfwwan
-		fi
-                if [ "${et_forward//lanfwet/}" != "$et_forward" ]; then
-			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 允许从局域网 lan 到虚拟网络 SDWAN 的流量" >>/tmp/sdwan.log
-			uci set firewall.lanfwsdwan=forwarding
-			uci set firewall.lanfwsdwan.dest='SDWAN'
-			uci set firewall.lanfwsdwan.src='lan'
-		else
-			uci -q delete firewall.lanfwsdwan
-		fi
-                if [ "${et_forward//wanfwet/}" != "$et_forward" ]; then
-			echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 允许从广域网 wan 到虚拟网络 SDWAN 的流量" >>/tmp/sdwan.log
-			uci set firewall.wanfwsdwan=forwarding
-			uci set firewall.wanfwsdwan.dest='SDWAN'
-			uci set firewall.wanfwsdwan.src='wan'
-		else
-			uci -q delete firewall.wanfwsdwan
-		fi
+	if [ "$auto_config_firewall" != "1" ]; then
+		echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : auto firewall config disabled, skipping" >>/tmp/sdwan.log
+		return
+	fi
+
+	[ -z "$tunname" ] && tunname="tun0"
+	[ -z "$interface_netmask" ] && interface_netmask="255.0.0.0"
+
+	# Virtual NIC joins the lan zone, so LAN <-> SDWAN works natively.
+	if [ "$auto_config_interface" = "1" ]; then
+		setup_sdwan_lan_zone "$tunname" "$ipaddr" "$interface_netmask"
+	else
+		sdwan_detach_lan_zone
+		uci -q delete network.SDWAN >/dev/null 2>&1
+	fi
+
+	# Only allow inbound WAN connections to the listening ports.
+	sdwan_allow_wan_ports
 }
 
 start_et() {
@@ -550,8 +425,7 @@ start_et() {
                 		[ "$relay_all" = "0" ] || core_cmd="${core_cmd} --relay-all-peer-rpc"
                 		[ -z "$socks_port" ] || core_cmd="${core_cmd} --socks5 $socks_port"
 				[ "$comp" = "none" ] || core_cmd="${core_cmd} --compression $comp"
-				[ "$bind_device" = "0" ] || core_cmd="${core_cmd} --bind-device true"
-				[ "$bind_device" = "1" ] || core_cmd="${core_cmd} --bind-device false"
+				[ "$bind_device" = "1" ] && core_cmd="${core_cmd} --bind-device true"
 				[ "$kcp_proxy" = "0" ] || core_cmd="${core_cmd} --enable-kcp-proxy"
 				[ "$kcp_input" = "0" ] || core_cmd="${core_cmd} --disable-kcp-input"
 				[ "$proxy_forward" = "0" ] || core_cmd="${core_cmd} --proxy-forward-by-system"
@@ -851,21 +725,7 @@ stop_service() {
                 	pgrep -f sdwan_check | xargs kill -9 >/dev/null 2>&1
                 	ps | grep 'sdwan-core' | grep -v grep | awk '{print $1}' | xargs kill >/dev/null 2>&1
                 	ps | grep 'sdwan-core' | grep -v grep | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1
-                	uci -q delete network.SDWAN >/dev/null 2>&1
-                	uci -q delete firewall.sdwanzone >/dev/null 2>&1
-	        	uci -q delete firewall.sdwanfwlan >/dev/null 2>&1
-	        	uci -q delete firewall.sdwanfwwan >/dev/null 2>&1
-	        	uci -q delete firewall.lanfwsdwan >/dev/null 2>&1
-	        	uci -q delete firewall.wanfwsdwan >/dev/null 2>&1
-	        	uci -q delete firewall.sdwan_tcp >/dev/null 2>&1
-                	uci -q delete firewall.sdwan_udp >/dev/null 2>&1
-                	uci -q delete firewall.sdwan_tcp_udp >/dev/null 2>&1
-                	uci -q delete firewall.sdwan_wss >/dev/null 2>&1
-                	uci -q delete firewall.sdwan_ws >/dev/null 2>&1
-                	uci -q delete firewall.sdwan_wg >/dev/null 2>&1
-                	uci -q delete firewall.sdwan_quic >/dev/null 2>&1
-                	uci -q delete firewall.sdwan_wireguard >/dev/null 2>&1
-                	uci -q delete firewall.sdwan_socks5 >/dev/null 2>&1
+		cleanup_sdwan_firewall
                 	
                 	# 延迟重载，避免与网络事件冲突
                 	if [ -n "$(uci changes network)" ] || [ -n "$(uci changes firewall)" ]; then

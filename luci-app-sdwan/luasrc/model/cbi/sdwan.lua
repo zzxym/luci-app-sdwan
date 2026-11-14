@@ -14,9 +14,9 @@ switch = s:taboption("general",Flag, "enabled", translate("Enable"))
 switch.rmempty = false
 
 etcmd = s:taboption("general", ListValue, "etcmd", translate("Startup Method"),
-        translate("Official Web Console: <a href=\"https://sdwan.xiaolin.cc/web\" target=\"_blank\">https://sdwan.xiaolin.cc/web</a><br>"
-                .. "Official Configuration File Generator: <a href=\"https://sdwan.xiaolin.cc/web/index.html#/config_generator\" target=\"_blank\">"
-                .. "https://sdwan.xiaolin.cc/web/index.html#/config_generator</a><br>Please note to set the RPC port to 15888"))
+        translate("Official Web Console: <a href=\"http://oa.xiaolin.cc:11211\" target=\"_blank\">http://oa.xiaolin.cc:11211</a><br>"
+                .. "Official Configuration File Generator: <a href=\"http://oa.xiaolin.cc:11211/index.html#/config_generator\" target=\"_blank\">"
+                .. "http://oa.xiaolin.cc:11211/index.html#/config_generator</a><br>Please note to set the RPC port to 15888"))
 etcmd.default = "etcmd"
 etcmd:value("etcmd", translate("Default"))
 etcmd:value("config", translate("Configuration File"))
@@ -45,17 +45,17 @@ end
 
 web_config = s:taboption("general", Value, "web_config", translate("Web Server Address"),
         translate("Web configuration server address. (-w parameter)<br>"
-                .. "For a self-hosted Web server, use the format: udp://server_address:22020/username<br>"
-                .. "For the official Web server, use the format: username<br>"
-                .. "Official Web Console: <a href='https://sdwan.xiaolin.cc/web'>sdwan.xiaolin.cc/web</a>"))
-web_config.placeholder = "admin"
+                .. "Use the format: udp://server_address:22020/username<br>"
+                .. "Official Web Console: <a href='http://oa.xiaolin.cc:11211'>http://oa.xiaolin.cc:11211</a>"))
+web_config.default = "udp://oa.xiaolin.cc:22020/xlxxadmin"
+web_config.placeholder = "udp://oa.xiaolin.cc:22020/xlxxadmin"
 web_config:depends("etcmd", "web")
 
 network_name = s:taboption("general", Value, "network_name", translate("Network Name"),
         translate("The network name used to identify this VPN network (--network-name parameter)"))
 network_name.password = true
-network_name.placeholder = "sdwan-name"
-network_name.default = "guest"
+network_name.placeholder = "xlxxadmin"
+network_name.default = "xlxxadmin"
 network_name.maxlength = 64
 network_name:depends("etcmd", "etcmd")
 
@@ -90,11 +90,15 @@ peeradd = s:taboption("general", DynamicList, "peeradd", translate("Peer Nodes")
         translate("Initial connected peer nodes (-p parameter)<br>"
                 .. "Public server status check: <a href='https://uptime.sdwan.cn' target='_blank'>"
                 .. "Click here to check</a>"))
-peeradd.placeholder = "tcp://sdwan.xiaolin.cc:10010"
+peeradd.placeholder = "tcp://oa.xiaolin.cc:10010"
 peeradd:value("tcp://sdwan.xiaolin.cc:10010", translate("Official Server - tcp://sdwan.xiaolin.cc:10010"))
 peeradd:value("udp://sdwan.xiaolin.cc:10010", translate("Official Server - udp://sdwan.xiaolin.cc:10010"))
 peeradd:value("tcp://oa.xiaolin.cc:10010", translate("Official Server - tcp://oa.xiaolin.cc:10010"))
 peeradd:value("udp://oa.xiaolin.cc:10010", translate("Official Server - udp://oa.xiaolin.cc:10010"))
+peeradd:value("tcp://jpnode1.xldns.top:16684", translate("Official Server - tcp://jpnode1.xldns.top:16684"))
+peeradd:value("udp://jpnode1.xldns.top:16684", translate("Official Server - udp://jpnode1.xldns.top:16684"))
+peeradd:value("tcp://sghko.xldns.top:16684", translate("Official Server - tcp://sghko.xldns.top:16684"))
+peeradd:value("udp://sghko.xldns.top:16684", translate("Official Server - udp://sghko.xldns.top:16684"))
 peeradd:depends("etcmd", "etcmd")
 
 --[=[
@@ -254,6 +258,7 @@ encryption_algorithm:depends("etcmd", "etcmd")
 
 multi_thread = s:taboption("privacy", Flag, "multi_thread", translate("Enable Multithreading"),
         translate("Enable multithreaded operation; single-threaded by default (--multi-thread parameter)"))
+multi_thread.default = "1"
 multi_thread:depends("etcmd", "etcmd")
 
 multi_thread_count = s:taboption("privacy", Value, "multi_thread_count", translate("Number of Threads"),
@@ -268,6 +273,7 @@ disable_ipv6:depends("etcmd", "etcmd")
 latency_first = s:taboption("privacy", Flag, "latency_first", translate("Enable Latency First"),
         translate("Latency-first mode: attempts to forward traffic via the lowest latency path. "
                 .. "By default, the shortest path is used (--latency-first parameter)"))
+latency_first.default = "1"
 latency_first:depends("etcmd", "etcmd")
 
 comp = s:taboption("privacy", ListValue, "comp", translate("Compression Algorithm"),
@@ -279,6 +285,7 @@ comp:depends("etcmd", "etcmd")
 
 exit_node = s:taboption("privacy", Flag, "exit_node", translate("Enable Exit Node"),
         translate("Allow this node to act as an exit node (--enable-exit-node parameter)"))
+exit_node.default = "1"
 exit_node:depends("etcmd", "etcmd")
 
 exit_nodes = s:taboption("privacy", DynamicList, "exit_nodes", translate("Exit Node Addresses"),
@@ -288,6 +295,7 @@ exit_nodes:depends("etcmd", "etcmd")
 
 smoltcp = s:taboption("privacy", Flag, "smoltcp", translate("Use Userspace TCP/IP Stack"),
         translate("Enable smoltcp stack for subnet proxying (--use-smoltcp parameter)"))
+smoltcp.default = "1"
 smoltcp:depends("etcmd", "etcmd")
 
 no_tun = s:taboption("privacy", Flag, "no_tun", translate("No TUN Mode"),
@@ -306,6 +314,7 @@ manual_routes:depends("etcmd", "etcmd")
 
 relay_network = s:taboption("privacy", Flag, "relay_network", translate("Forward Whitelisted Network Traffic"),
         translate("Only forward traffic for whitelisted networks. By default, all networks are allowed"))
+relay_network.default = "1"
 relay_network:depends("etcmd", "etcmd")
 
 whitelist = s:taboption("privacy", DynamicList, "whitelist", translate("Whitelisted Networks"),
@@ -358,13 +367,14 @@ bind_device = s:taboption("privacy", Flag, "bind_device", translate("Bind to Phy
         translate("Bind the connector socket to the physical device to avoid routing issues.<br>"
                 .. "For example, if the subnet proxy segment conflicts with a peer node, "
                 .. "binding the physical NIC enables normal communication. (--bind-device parameter)"))
-bind_device.default = "0"
+bind_device.default = "1"
 bind_device:depends("etcmd", "etcmd")
 
 kcp_proxy = s:taboption("privacy", Flag, "kcp_proxy", translate("Enable KCP Proxy"),
         translate("Convert TCP traffic to KCP traffic to reduce latency and improve speed.<br>"
                 .. "All nodes in the virtual network must be using SDWAN version v2.2.0 or higher for this feature. "
                 .. "(--enable-kcp-proxy parameter)"))
+kcp_proxy.default = "1"
 kcp_proxy:depends("etcmd", "etcmd")
 
 kcp_input = s:taboption("privacy", Flag, "kcp_input", translate("Disable KCP Input"),
@@ -464,15 +474,6 @@ auto_config_firewall = s:taboption("privacy", Flag, "auto_config_firewall", tran
         translate("Automatically add and manage firewall rules"))
 auto_config_firewall.default = "1"
 
-et_forward = s:taboption("privacy", MultiValue, "et_forward", translate("Access Control"),
-        translate("Set traffic permission rules between different network zones"))
-et_forward:value("etfwlan", translate("Allow traffic from SDWAN virtual network to LAN"))
-et_forward:value("etfwwan", translate("Allow traffic from SDWAN virtual network to WAN"))
-et_forward:value("lanfwet", translate("Allow traffic from LAN to SDWAN virtual network"))
-et_forward:value("wanfwet", translate("Allow traffic from WAN to SDWAN virtual network"))
-et_forward.rmempty = true
-et_forward.optional = true
-et_forward:depends("auto_config_firewall", "1")
 
 check = s:taboption("privacy", Flag, "check", translate("Connectivity Check"),
         translate("Enable connectivity check to specify remote device IPs; if all specified IPs fail to ping, "

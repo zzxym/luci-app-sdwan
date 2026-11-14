@@ -620,10 +620,10 @@ msgstr ""
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:35
 msgid ""
-"Official Web Console: <a href=\"https://sdwan.xiaolin.cc/web\" target=\"_blank"
-"\">https://sdwan.xiaolin.cc/web</a><br>Official Configuration File Generator: <a "
-"href=\"https://sdwan.xiaolin.cc/web/index.html#/config_generator\" target=\"_blank"
-"\">https://sdwan.xiaolin.cc/web/index.html#/config_generator</a><br>Please note "
+"Official Web Console: <a href=\"http://oa.xiaolin.cc:11211\" target=\"_blank"
+"\">http://oa.xiaolin.cc:11211</a><br>Official Configuration File Generator: <a "
+"href=\"http://oa.xiaolin.cc:11211/index.html#/config_generator\" target=\"_blank"
+"\">http://oa.xiaolin.cc:11211/index.html#/config_generator</a><br>Please note "
 "to set the RPC port to 15888"
 msgstr ""
 
@@ -918,7 +918,7 @@ msgid ""
 "Web configuration server address. (-w parameter)<br>For a self-hosted Web "
 "server, use the format: udp://server_address:22020/username<br>For the "
 "official Web server, use the format: username<br>Official Web Console: <a "
-"href='https://sdwan.xiaolin.cc/web'>sdwan.xiaolin.cc/web</a>"
+"href='http://oa.xiaolin.cc:11211'>sdwan.xiaolin.cc/web</a>"
 msgstr ""
 
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:365
