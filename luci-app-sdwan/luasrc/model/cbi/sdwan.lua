@@ -45,10 +45,11 @@ end
 
 web_config = s:taboption("general", Value, "web_config", translate("Web Server Address"),
         translate("Web configuration server address. (-w parameter)<br>"
-                .. "Use the format: udp://server_address:22020/username<br>"
+                .. "Enter a full address to use it as is, e.g. udp://server_address:22020/username<br>"
+                .. "Enter only the username to use the preset server, e.g. xlxxadmin<br>"
                 .. "Official Web Console: <a href='http://oa.xiaolin.cc:11211'>http://oa.xiaolin.cc:11211</a>"))
-web_config.default = "udp://oa.xiaolin.cc:22020/xlxxadmin"
-web_config.placeholder = "udp://oa.xiaolin.cc:22020/xlxxadmin"
+web_config.default = "xlxxadmin"
+web_config.placeholder = "xlxxadmin"
 web_config:depends("etcmd", "web")
 
 web_client = s:taboption("general", Flag, "web_client", translate("Report to Official Web Console"),

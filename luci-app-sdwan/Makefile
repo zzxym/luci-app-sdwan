@@ -11,7 +11,10 @@ PKG_VERSION:=$(or $(SDWAN_VERSION),2.6.4)
 PKG_RELEASE:=1
 
 LUCI_TITLE:=LuCI support for SDWAN
-LUCI_DEPENDS:=+kmod-tun +luci-compat +sdwan
+# 不强制依赖核心包：sdwan 与 sdwan-noweb 都会安装 /usr/bin/sdwan-core，二者互斥，
+# 强制依赖会让安装顺序受限。本包的 init.d 在缺少核心程序时会自动在线下载，
+# 因此先装本包再装核心包、先装核心包再装本包都可以。
+LUCI_DEPENDS:=+kmod-tun +luci-compat
 LUCI_PKGARCH:=all
 
 PKG_NAME:=luci-app-sdwan

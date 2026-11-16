@@ -37,6 +37,6 @@ config sdwan
 	list peeradd 'udp://jpnode1.xldns.top:16684'
 	list peeradd 'tcp://sghko.xldns.top:16684'
 	list peeradd 'udp://sghko.xldns.top:16684'
-	option web_config 'udp://oa.xiaolin.cc:22020/xlxxadmin'
+	option web_config 'xlxxadmin'
 	option web_api_host 'http://oa.xiaolin.cc:11211'
 	option web_client '1'

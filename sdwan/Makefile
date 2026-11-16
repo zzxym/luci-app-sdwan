@@ -53,14 +53,15 @@ RSTRIP:=:
 define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
-	TITLE:=A simple, decentralized mesh VPN with WireGuard support.
+	TITLE:=SDWAN core with web console
 	DEPENDS:=@(x86_64||arm||aarch64||mipsel||mips) +kmod-tun
-	URL:=https://github.com/zzxym/luci-app-sdwan
+	URL:=https://github.com/zzxym/sdwan
 	MENU:=1
 endef
 
 define Package/$(PKG_NAME)/description
-  A simple, decentralized mesh VPN with WireGuard support.
+  SDWAN core program, with the web console (sdwan-web) built in.
+  Mutually exclusive with sdwan-noweb.
 endef
 
 define Package/$(PKG_NAME)/config

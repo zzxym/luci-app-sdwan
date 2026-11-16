@@ -42,15 +42,23 @@ OpenWrt LuCI界面，用于管理 [SDWAN](https://github.com/zzxym/sdwan) - 一�
 
 1. 从 [Releases](https://github.com/zzxym/luci-app-sdwan/releases) 下载对应架构的安装包
 2. 上传到OpenWrt的 `/tmp` 目录
-3. 安装：
+3. 安装（**核心包 `sdwan` 与界面包 `luci-app-sdwan` 的安装顺序不限**）：
 
 ```bash
 # IPK包 (OpenWrt 22.03.x)
+opkg install /tmp/sdwan_*.ipk
 opkg install /tmp/luci-app-sdwan_*.ipk
 
 # APK包 (OpenWrt SNAPSHOT)
+apk add --allow-untrusted /tmp/sdwan_*.apk
 apk add --allow-untrusted /tmp/luci-app-sdwan_*.apk
 ```
+
+> 装了 `sdwan-noweb`（不含 Web 控制台的核心包）时同理，二者互斥、只装其一：
+> ```bash
+> opkg install /tmp/sdwan-noweb_*.ipk
+> opkg install /tmp/luci-app-sdwan_*.ipk
+> ```
 
 4. 刷新浏览器或重新登录LuCI界面
 5. 在 **VPN → SDWAN** 中上传SDWAN二进制程序
@@ -92,6 +100,23 @@ find bin/ -name "luci-app-sdwan*.ipk"
 
 - `kmod-tun` - TUN/TAP内核模块（必需）
 - `luci-compat` - LuCI兼容层
+- 核心程序 `sdwan` 或 `sdwan-noweb`（二选一；缺少时本包会在首次启动时自动在线下载）
+
+`sdwan` 与 `sdwan-noweb` 都会安装 `/usr/bin/sdwan-core`，两者互斥，不能同时安装：
+- `sdwan`：包含核心程序，并可选内置 Web 控制台（`sdwan-web`）
+- `sdwan-noweb`：仅包含核心程序，不含 Web 控制台
+
+本包**不强制**依赖核心包，因此下列两种安装顺序都可以：
+
+```bash
+# 方式一：先核心后界面
+opkg install /tmp/sdwan_*.ipk
+opkg install /tmp/luci-app-sdwan_*.ipk
+
+# 方式二：先界面后核心
+opkg install /tmp/luci-app-sdwan_*.ipk
+opkg install /tmp/sdwan_*.ipk
+```
 
 安装前请确保已安装 `kmod-tun`：
 ```bash

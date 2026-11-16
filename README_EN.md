@@ -36,15 +36,23 @@ OpenWrt LuCI web interface for managing [SDWAN](https://github.com/zzxym/sdwan) 
 
 1. Download the package for your architecture from [Releases](https://github.com/zzxym/luci-app-sdwan/releases)
 2. Upload to OpenWrt's `/tmp` directory
-3. Install:
+3. Install (**the order of the core package `sdwan` and the UI package `luci-app-sdwan` does not matter**):
 
 ```bash
 # IPK package (OpenWrt 22.03.x)
+opkg install /tmp/sdwan_*.ipk
 opkg install /tmp/luci-app-sdwan_*.ipk
 
 # APK package (OpenWrt SNAPSHOT)
+apk add --allow-untrusted /tmp/sdwan_*.apk
 apk add --allow-untrusted /tmp/luci-app-sdwan_*.apk
 ```
+
+> The same applies to `sdwan-noweb` (core package without the web console); the two are mutually exclusive:
+> ```bash
+> opkg install /tmp/sdwan-noweb_*.ipk
+> opkg install /tmp/luci-app-sdwan_*.ipk
+> ```
 
 4. Refresh your browser or re-login to LuCI interface
 5. Upload SDWAN binary in **VPN → SDWAN**
@@ -86,6 +94,23 @@ find bin/ -name "luci-app-sdwan*.ipk"
 
 - `kmod-tun` - TUN/TAP kernel module (required)
 - `luci-compat` - LuCI compatibility layer
+- Core program `sdwan` or `sdwan-noweb` (either one; downloaded automatically on first start if missing)
+
+`sdwan` and `sdwan-noweb` both install `/usr/bin/sdwan-core`, so they are mutually exclusive:
+- `sdwan` - core program, optionally with the embedded web console (`sdwan-web`)
+- `sdwan-noweb` - core program only, without the web console
+
+This package does **not** force a dependency on the core package, so both installation orders work:
+
+```bash
+# Option 1: core first
+opkg install /tmp/sdwan_*.ipk
+opkg install /tmp/luci-app-sdwan_*.ipk
+
+# Option 2: UI first
+opkg install /tmp/luci-app-sdwan_*.ipk
+opkg install /tmp/sdwan_*.ipk
+```
 
 Ensure `kmod-tun` is installed before installation:
 ```bash
