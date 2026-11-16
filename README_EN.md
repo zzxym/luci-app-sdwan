@@ -230,7 +230,7 @@ luci-app-sdwan/
 
 ```lua
 -- API path format
-entry({"admin", "services", "sdwan", "api_name"}, call("function_name")).leaf = true
+entry({"admin", "vpn", "sdwan", "api_name"}, call("function_name")).leaf = true
 
 -- Return JSON format
 function api_name()

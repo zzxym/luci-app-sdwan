@@ -236,7 +236,7 @@ luci-app-sdwan/
 
 ```lua
 -- API路径格式
-entry({"admin", "services", "sdwan", "api_name"}, call("function_name")).leaf = true
+entry({"admin", "vpn", "sdwan", "api_name"}, call("function_name")).leaf = true
 
 -- 返回JSON格式
 function api_name()

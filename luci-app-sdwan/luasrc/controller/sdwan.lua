@@ -47,36 +47,36 @@ function index()
 		return
 	end
 	
-	entry({"admin", "services", "sdwan"}, firstchild(),_("SDWAN"), 46).dependent = true
-	entry({"admin", "services", "sdwan", "status"}, cbi("sdwan_status"),_("Status"), 1).leaf = true
-	entry({"admin", "services", "sdwan", "config"}, cbi("sdwan"),_("SDWAN Core"), 2).leaf = true
-	entry({"admin", "services", "sdwan", "webconsole"}, template("sdwan/sdwan_web"),_("SDWAN Web"), 3).leaf = true
-	entry({"admin", "services", "sdwan", "log"}, template("sdwan/sdwan_log"),_("Logs"), 4).leaf = true
-	entry({"admin", "services", "sdwan", "upload"}, template("sdwan/sdwan_upload"),_("Upload Program"), 5).leaf = true
-	entry({"admin", "services", "sdwan", "upload_binary"}, call("upload_binary")).leaf = true
-	entry({"admin", "services", "sdwan", "get_upload_config"}, call("get_upload_config")).leaf = true
-	entry({"admin", "services", "sdwan", "save_upload_config"}, call("save_upload_config")).leaf = true
-	entry({"admin", "services", "sdwan", "get_disk_space"}, call("get_disk_space")).leaf = true
-	entry({"admin", "services", "sdwan", "get_tun_info"}, call("get_tun_info")).leaf = true
-	entry({"admin", "services", "sdwan", "get_log"}, call("get_log")).leaf = true
-	entry({"admin", "services", "sdwan", "get_log_size"}, call("get_log_size")).leaf = true
-	entry({"admin", "services", "sdwan", "clear_log"}, call("clear_log")).leaf = true
-	entry({"admin", "services", "sdwan", "get_wlog"}, call("get_wlog")).leaf = true
-	entry({"admin", "services", "sdwan", "get_wlog_size"}, call("get_wlog_size")).leaf = true
-	entry({"admin", "services", "sdwan", "clear_wlog"}, call("clear_wlog")).leaf = true
-	entry({"admin", "services", "sdwan", "clear_version_cache"}, call("clear_version_cache")).leaf = true
-	entry({"admin", "services", "sdwan", "get_web_config"}, call("get_web_config")).leaf = true
-	entry({"admin", "services", "sdwan", "save_web_config"}, call("save_web_config")).leaf = true
-	entry({"admin", "services", "sdwan", "reset_database"}, call("reset_database")).leaf = true
-	entry({"admin", "services", "sdwan", "check_web_status"}, call("check_web_status")).leaf = true
-	entry({"admin", "services", "sdwan", "api_status"}, call("act_status")).leaf = true
-	entry({"admin", "services", "sdwan", "api_conninfo"}, call("act_conninfo")).leaf = true
-	entry({"admin", "services", "sdwan", "restart_service"}, call("restart_service")).leaf = true
-	entry({"admin", "services", "sdwan", "toggle_core"}, call("toggle_core")).leaf = true
-	entry({"admin", "services", "sdwan", "toggle_web"}, call("toggle_web")).leaf = true
-	entry({"admin", "services", "sdwan", "download_sdwan"}, call("download_sdwan")).leaf = true
-	entry({"admin", "services", "sdwan", "download_progress"}, call("download_progress")).leaf = true
-	entry({"admin", "services", "sdwan", "cancel_download"}, call("cancel_download")).leaf = true
+	entry({"admin", "vpn", "sdwan"}, firstchild(),_("SDWAN"), 46).dependent = true
+	entry({"admin", "vpn", "sdwan", "status"}, cbi("sdwan_status"),_("Status"), 1).leaf = true
+	entry({"admin", "vpn", "sdwan", "config"}, cbi("sdwan"),_("SDWAN Core"), 2).leaf = true
+	entry({"admin", "vpn", "sdwan", "webconsole"}, template("sdwan/sdwan_web"),_("SDWAN Web"), 3).leaf = true
+	entry({"admin", "vpn", "sdwan", "log"}, template("sdwan/sdwan_log"),_("Logs"), 4).leaf = true
+	entry({"admin", "vpn", "sdwan", "upload"}, template("sdwan/sdwan_upload"),_("Upload Program"), 5).leaf = true
+	entry({"admin", "vpn", "sdwan", "upload_binary"}, call("upload_binary")).leaf = true
+	entry({"admin", "vpn", "sdwan", "get_upload_config"}, call("get_upload_config")).leaf = true
+	entry({"admin", "vpn", "sdwan", "save_upload_config"}, call("save_upload_config")).leaf = true
+	entry({"admin", "vpn", "sdwan", "get_disk_space"}, call("get_disk_space")).leaf = true
+	entry({"admin", "vpn", "sdwan", "get_tun_info"}, call("get_tun_info")).leaf = true
+	entry({"admin", "vpn", "sdwan", "get_log"}, call("get_log")).leaf = true
+	entry({"admin", "vpn", "sdwan", "get_log_size"}, call("get_log_size")).leaf = true
+	entry({"admin", "vpn", "sdwan", "clear_log"}, call("clear_log")).leaf = true
+	entry({"admin", "vpn", "sdwan", "get_wlog"}, call("get_wlog")).leaf = true
+	entry({"admin", "vpn", "sdwan", "get_wlog_size"}, call("get_wlog_size")).leaf = true
+	entry({"admin", "vpn", "sdwan", "clear_wlog"}, call("clear_wlog")).leaf = true
+	entry({"admin", "vpn", "sdwan", "clear_version_cache"}, call("clear_version_cache")).leaf = true
+	entry({"admin", "vpn", "sdwan", "get_web_config"}, call("get_web_config")).leaf = true
+	entry({"admin", "vpn", "sdwan", "save_web_config"}, call("save_web_config")).leaf = true
+	entry({"admin", "vpn", "sdwan", "reset_database"}, call("reset_database")).leaf = true
+	entry({"admin", "vpn", "sdwan", "check_web_status"}, call("check_web_status")).leaf = true
+	entry({"admin", "vpn", "sdwan", "api_status"}, call("act_status")).leaf = true
+	entry({"admin", "vpn", "sdwan", "api_conninfo"}, call("act_conninfo")).leaf = true
+	entry({"admin", "vpn", "sdwan", "restart_service"}, call("restart_service")).leaf = true
+	entry({"admin", "vpn", "sdwan", "toggle_core"}, call("toggle_core")).leaf = true
+	entry({"admin", "vpn", "sdwan", "toggle_web"}, call("toggle_web")).leaf = true
+	entry({"admin", "vpn", "sdwan", "download_sdwan"}, call("download_sdwan")).leaf = true
+	entry({"admin", "vpn", "sdwan", "download_progress"}, call("download_progress")).leaf = true
+	entry({"admin", "vpn", "sdwan", "cancel_download"}, call("cancel_download")).leaf = true
 end
 
 function act_status()

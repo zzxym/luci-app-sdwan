@@ -157,9 +157,9 @@ msgstr "上传成功"
 ```lua
 -- controller/sdwan.lua
 function index()
-    entry({"admin", "services", "sdwan"}, firstchild(), _("SDWAN"), 46).dependent = true
-    entry({"admin", "services", "sdwan", "status"}, cbi("sdwan_status"), _("Status"), 1).leaf = true
-    entry({"admin", "services", "sdwan", "api_status"}, call("act_status")).leaf = true
+    entry({"admin", "vpn", "sdwan"}, firstchild(), _("SDWAN"), 46).dependent = true
+    entry({"admin", "vpn", "sdwan", "status"}, cbi("sdwan_status"), _("Status"), 1).leaf = true
+    entry({"admin", "vpn", "sdwan", "api_status"}, call("act_status")).leaf = true
 end
 ```
 
@@ -183,7 +183,7 @@ end
 ```javascript
 function updateStatus() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/cgi-bin/luci/admin/services/sdwan/api_status', true);
+    xhr.open('GET', '/cgi-bin/luci/admin/vpn/sdwan/api_status', true);
     xhr.onload = function() {
         if (xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
@@ -254,7 +254,7 @@ end
 ```javascript
 function loadLog() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/cgi-bin/luci/admin/services/sdwan/get_log', true);
+    xhr.open('GET', '/cgi-bin/luci/admin/vpn/sdwan/get_log', true);
     xhr.onload = function() {
         if (xhr.status === 200) {
             var lines = xhr.responseText.split('\n');

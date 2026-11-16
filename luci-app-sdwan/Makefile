@@ -47,13 +47,13 @@ if [ -f /tmp/sdwan_backup ] ; then
   echo "发现luci备份配置文件/tmp/sdwan_backup，开始恢复到/etc/config/sdwan"
   rm -rf /etc/config/sdwan
   mv -f /tmp/sdwan_backup /etc/config/sdwan
-  echo "请前往 服务 - SDWAN 界面进行重启插件"
+  echo "请前往 VPN - SDWAN 界面进行重启插件"
 fi
 if [ -d /tmp/sdwan_config_backup ] ; then
   echo "发现sdwan备份配置目录/tmp/sdwan_config_backup，开始恢复到/etc/sdwan"
   rm -rf /etc/sdwan
   mv -f /tmp/sdwan_config_backup /etc/sdwan
-  echo "请前往 服务 - SDWAN 界面进行重启插件"
+  echo "请前往 VPN - SDWAN 界面进行重启插件"
 fi
 # 恢复的配置可能开启了自建 Web 控制台，但当前安装的核心包不一定带 Web 控制台
 # （sdwan-noweb 不包含 sdwan-web）。此时关闭该开关，避免启动时触发不必要的在线下载。

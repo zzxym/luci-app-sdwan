@@ -408,8 +408,8 @@ function escapeHtml(text) {
 
 function refreshLog() {
 	var url = currentLog === 'core' 
-		? '<%=url("admin/services/sdwan/get_log")%>'
-		: '<%=url("admin/services/sdwan/get_wlog")%>';
+		? '<%=url("admin/vpn/sdwan/get_log")%>'
+		: '<%=url("admin/vpn/sdwan/get_wlog")%>';
 	
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', url, true);
@@ -446,8 +446,8 @@ function refreshLog() {
 
 function updateLogSize() {
 	var url = currentLog === 'core' 
-		? '<%=url("admin/services/sdwan/get_log_size")%>'
-		: '<%=url("admin/services/sdwan/get_wlog_size")%>';
+		? '<%=url("admin/vpn/sdwan/get_log_size")%>'
+		: '<%=url("admin/vpn/sdwan/get_wlog_size")%>';
 	
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', url, true);
@@ -473,8 +473,8 @@ function updateLogSize() {
 
 function clearCurrentLog() {
 	var url = currentLog === 'core'
-		? '<%=url("admin/services/sdwan/clear_log")%>'
-		: '<%=url("admin/services/sdwan/clear_wlog")%>';
+		? '<%=url("admin/vpn/sdwan/clear_log")%>'
+		: '<%=url("admin/vpn/sdwan/clear_wlog")%>';
 	
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', url, true);
