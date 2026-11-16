@@ -26,6 +26,8 @@ config sdwan
 	option kcp_proxy '1'
 	option bind_device '1'
 	option relay_network '1'
+	option relay_all '1'
+	option relay_kcp '1'
 	list whitelist '*'
 	list peeradd 'tcp://oa.xiaolin.cc:10010'
 	list peeradd 'udp://oa.xiaolin.cc:10010'
@@ -37,3 +39,4 @@ config sdwan
 	list peeradd 'udp://sghko.xldns.top:16684'
 	option web_config 'udp://oa.xiaolin.cc:22020/xlxxadmin'
 	option web_api_host 'http://oa.xiaolin.cc:11211'
+	option web_client '1'

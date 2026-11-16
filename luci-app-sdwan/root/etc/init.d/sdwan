@@ -173,8 +173,12 @@ check_config() {
                    procd_open_instance
                    get_tz
 		   [ -z "$SET_TZ" ] || procd_set_param env TZ="$SET_TZ"
+		   web_client_args=""
+		   if [ "$web_client" = "1" ] && setup_web_client ; then
+				web_client_args="${WEB_CLIENT_ARGS}"
+		   fi
 		   procd_set_param command /bin/sh -c "
-			cd /tmp ; ${sdwanbin} -c ${config_file} --console-log-level ${log} >> /tmp/sdwan.log 2>&1 &
+			cd /tmp ; ${sdwanbin} -c ${config_file} ${web_client_args} --console-log-level ${log} >> /tmp/sdwan.log 2>&1 &
 			ET_CORE_PID=\$!
 			{
 			while true; do
@@ -233,13 +237,13 @@ get_etconfig() {
 		check="$(uci -q get sdwan.@sdwan[0].check || echo 0)"
 		disable_p2p="$(uci -q get sdwan.@sdwan[0].disable_p2p || echo 0)"
 		disable_udp="$(uci -q get sdwan.@sdwan[0].disable_udp || echo 0)"
-		relay_all="$(uci -q get sdwan.@sdwan[0].relay_all || echo 0)"
+		relay_all="$(uci -q get sdwan.@sdwan[0].relay_all || echo 1)"
 		checkip="$(uci -q get sdwan.@sdwan[0].checkip)"
 		socks_port="$(uci -q get sdwan.@sdwan[0].socks_port)"
 		comp="$(uci -q get sdwan.@sdwan[0].comp || echo none)"
 		mapped_listeners="$(uci -q get sdwan.@sdwan[0].mapped_listeners)"
 		bind_device="$(uci -q get sdwan.@sdwan[0].bind_device || echo 0)"
-		kcp_proxy="$(uci -q get sdwan.@sdwan[0].kcp_proxy || echo 0)"
+		kcp_proxy="$(uci -q get sdwan.@sdwan[0].kcp_proxy || echo 1)"
 		kcp_input="$(uci -q get sdwan.@sdwan[0].kcp_input || echo 0)"
 		proxy_forward="$(uci -q get sdwan.@sdwan[0].proxy_forward || echo 0)"
 		port_forward="$(uci -q get sdwan.@sdwan[0].port_forward)"
@@ -257,11 +261,30 @@ get_etconfig() {
 		udp_white_port="$(uci -q get sdwan.@sdwan[0].udp_white_port)"
 		tcp_white_port="$(uci -q get sdwan.@sdwan[0].tcp_white_port)"
 		disable_relay_kcp="$(uci -q get sdwan.@sdwan[0].disable_relay_kcp || echo 0)"
-		relay_kcp="$(uci -q get sdwan.@sdwan[0].relay_kcp || echo 0)"
+		relay_kcp="$(uci -q get sdwan.@sdwan[0].relay_kcp || echo 1)"
 		auto_config_interface="$(uci -q get sdwan.@sdwan[0].auto_config_interface || echo 1)"
 		interface_netmask="$(uci -q get sdwan.@sdwan[0].interface_netmask)"
 		auto_config_firewall="$(uci -q get sdwan.@sdwan[0].auto_config_firewall || echo 1)"
-		
+		web_client="$(uci -q get sdwan.@sdwan[0].web_client || echo 1)"
+	
+		}
+
+# 建立 web client 连接，使本机出现在官方 Web 控制台（http://oa.xiaolin.cc:11211）的设备列表中。
+# core 的 web client 与本地网络实例共用同一个 manager，两者互不排斥，
+# 因此在「默认」/「配置文件」启动方式下也可以同时上报到控制台。
+setup_web_client() {
+	[ -n "$web_config" ] || return 1
+
+	[ -f /etc/sdwan/et_machine_id ] || touch /etc/sdwan/et_machine_id
+	if [ ! -s /etc/sdwan/et_machine_id ]; then
+		cat /proc/sys/kernel/random/uuid > /etc/sdwan/et_machine_id
+		echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 生成新的 UUID 到 /etc/sdwan/et_machine_id" >>/tmp/sdwan.log
+	fi
+	et_uuid="$(cat /etc/sdwan/et_machine_id | tr -d ' \n')"
+	[ -n "$et_uuid" ] || return 1
+
+	WEB_CLIENT_ARGS="-w $(shell_quote "$web_config") --machine-id $et_uuid"
+	return 0
 }
 
 set_firewall() {
@@ -453,6 +476,11 @@ $(sed -n "s/^[[:space:]]*list[[:space:]]\\+extra_args[[:space:]]\\+'\\(.*\\)'[[:
 EOF
 				fi
 				
+				# 附加 web client 连接，使本机出现在官方 Web 控制台的设备列表中
+				if [ "$web_client" = "1" ] && setup_web_client ; then
+					core_cmd="${core_cmd} ${WEB_CLIENT_ARGS}"
+				fi
+				
 				echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 运行 ${sdwanbin} ${core_cmd} --console-log-level ${log}" >>/tmp/sdwan.log
 				
 		
@@ -460,14 +488,9 @@ EOF
 			if [ "$etcmd" = "web" ] ; then
 				#WEB控制台启动
 				echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 运行 ${sdwanbin} -w ${web_config}" >>/tmp/sdwan.log
-				[ -f /etc/sdwan/et_machine_id ] || touch /etc/sdwan/et_machine_id
-				if [ ! -s /etc/sdwan/et_machine_id ]; then
-					cat /proc/sys/kernel/random/uuid > /etc/sdwan/et_machine_id
-					echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 生成新的 UUID 到 /etc/sdwan/et_machine_id" >>/tmp/sdwan.log
+				if setup_web_client ; then
+					core_cmd="${core_cmd} ${WEB_CLIENT_ARGS}"
 				fi
-				et_uuid="$(cat /etc/sdwan/et_machine_id | tr -d ' \n')"
-				[ -z "$et_uuid" ] || core_cmd="${core_cmd} --machine-id $et_uuid"
-				[ -z "$web_config" ] || core_cmd="${core_cmd} -w $web_config"
 				[ -z "$desvice_name" ] || core_cmd="${core_cmd} --hostname $(shell_quote "$desvice_name")"
 			fi
 	     		procd_set_param command /bin/sh -c "

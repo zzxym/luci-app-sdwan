@@ -51,6 +51,15 @@ web_config.default = "udp://oa.xiaolin.cc:22020/xlxxadmin"
 web_config.placeholder = "udp://oa.xiaolin.cc:22020/xlxxadmin"
 web_config:depends("etcmd", "web")
 
+web_client = s:taboption("general", Flag, "web_client", translate("Report to Official Web Console"),
+        translate("Also connect to the official configuration server (-w parameter) so that this device "
+                .. "is listed in the device list of the official Web Console.<br>"
+                .. "The local configuration is still used for networking.<br>"
+                .. "Official Web Console: <a href='http://oa.xiaolin.cc:11211'>http://oa.xiaolin.cc:11211</a>"))
+web_client.default = "1"
+web_client.rmempty = false
+web_client:depends("etcmd", "etcmd|config")
+
 network_name = s:taboption("general", Value, "network_name", translate("Network Name"),
         translate("The network name used to identify this VPN network (--network-name parameter)"))
 network_name.password = true
@@ -361,6 +370,7 @@ disable_sym:depends("etcmd", "etcmd")
 relay_all = s:taboption("privacy", Flag, "relay_all", translate("Allow Forwarding"),
         translate("Forward RPC packets from all peer nodes, even if they are not in the relay network whitelist.<br>"
                 .. "This can help peer nodes in non-whitelisted networks establish P2P connections. (--relay-all-peer-rpc parameter)"))
+relay_all.default = "1"
 relay_all:depends("etcmd", "etcmd")
 
 bind_device = s:taboption("privacy", Flag, "bind_device", translate("Bind to Physical NIC Only"),
@@ -388,6 +398,7 @@ disable_relay_kcp:depends("etcmd", "etcmd")
 
 relay_kcp = s:taboption("privacy", Flag, "relay_kcp", translate("Relay foreign network kcp"),
         translate("If true, allow relay kcp packets from foreign network. default is false (not forward foreign network kcp packets). (--enable-relay-foreign-network-kcp parameter)"))
+relay_kcp.default = "1"
 relay_kcp:depends("etcmd", "etcmd")
 
 quic_proxy = s:taboption("privacy", Flag, "quic_proxy", translate("Enable QUIC Proxy"),

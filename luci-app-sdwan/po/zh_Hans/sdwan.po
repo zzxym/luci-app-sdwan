@@ -1,18 +1,3 @@
-msgid ""
-"A simple, secure, decentralized VPN solution for intranet penetration, "
-"implemented in Rust using the Tokio framework. Project URL: <a href="
-"\"https://github.com/zzxym/sdwan\" target=\"_blank\">github.com/"
-"zzxym/sdwan</a>&nbsp;&nbsp;<a href=\"http://sdwan.cn\" target="
-"\"_blank\">Official Documentation</a>&nbsp;&nbsp;<a href=\"http://qm.qq.com/"
-"cgi-bin/qm/qr?"
-"_wv=1027&k=jhP2Z4UsEZ8wvfGPLrs0VwLKn_uz0Q_p&authKey=OGKSQLfg61YPCpVQuvx"
-"%2BxE7hUKBVBEVi9PljrDKbHlle6xqOXx8sOwPPTncMambK&noverify=0&group_code=949700262\" "
-"target=\"_blank\">QQ Group</a>&nbsp;&nbsp;">Beginner Tutorial</a>"
-msgstr ""
-"一个简单、安全、去中心化的内网穿透 VPN 组网方案，使用 Rust 语言和 Tokio 框架实现。 "
-"项目地址：<a href=\"https://github.com/zzxym/sdwan\" target=\"_blank\">github.com/zzxym/sdwan</a>&nbsp;&nbsp;"
-"<a href=\"http://sdwan.cn\" target=\"_blank\">官网文档</a>&nbsp;&nbsp;"
-"<a href=\"http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=jhP2Z4UsEZ8wvfGPLrs0VwLKn_uz0Q_p&authKey=OGKSQLfg61YPCpVQuvx%2BxE7hUKBVBEVi9PljrDKbHlle6xqOXx8sOwPPTncMambK&noverify=0&group_code=949700262\" target=\"_blank\">QQ群</a>&nbsp;&nbsp;"
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:720
 msgid "API Port"
 msgstr "API端口"
@@ -2116,3 +2101,9 @@ msgstr "数据库重置成功"
 
 msgid "Restart service to apply changes?"
 msgstr "重启服务以生效？"
+
+msgid "Report to Official Web Console"
+msgstr "上报到官方 Web 控制台"
+
+msgid "Also connect to the official configuration server (-w parameter) so that this device is listed in the device list of the official Web Console.<br>The local configuration is still used for networking.<br>Official Web Console: <a href='http://oa.xiaolin.cc:11211'>http://oa.xiaolin.cc:11211</a>"
+msgstr "同时连接官方配置服务器（-w 参数），使本机出现在官方 Web 控制台的设备列表中。<br>组网仍使用本地配置。<br>官方 Web 控制台：<a href='http://oa.xiaolin.cc:11211'>http://oa.xiaolin.cc:11211</a>"

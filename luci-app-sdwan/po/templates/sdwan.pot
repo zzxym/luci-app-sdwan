@@ -22,20 +22,6 @@ msgid ""
 "take effect"
 msgstr ""
 
-#: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:5
-msgid ""
-"A simple, secure, decentralized VPN solution for intranet penetration, "
-"implemented in Rust using the Tokio framework. Project URL: <a href="
-"\"https://github.com/zzxym/sdwan\" target=\"_blank\">github.com/"
-"zzxym/sdwan</a>&nbsp;&nbsp;<a href=\"http://sdwan.cn\" target="
-"\"_blank\">Official Documentation</a>&nbsp;&nbsp;<a href=\"http://qm.qq.com/"
-"cgi-bin/qm/qr?"
-"_wv=1027&k=jhP2Z4UsEZ8wvfGPLrs0VwLKn_uz0Q_p&authKey=OGKSQLfg61YPCpVQuvx"
-"%2BxE7hUKBVBEVi9PljrDKbHlle6xqOXx8sOwPPTncMambK&noverify=0&group_code=949700262\" "
-"target=\"_blank\">QQ Group</a>&nbsp;&nbsp;<a href=\"https://doc.oee.icu"
-"\" target=\"_blank\">Beginner Tutorial</a>"
-msgstr ""
-
 #: applications/luci-app-sdwan/luasrc/model/cbi/sdwan.lua:720
 msgid "API Port"
 msgstr ""
@@ -1420,4 +1406,10 @@ msgid "Copied"
 msgstr ""
 
 msgid "Duplicate extra parameter"
+msgstr ""
+
+msgid "Report to Official Web Console"
+msgstr ""
+
+msgid "Also connect to the official configuration server (-w parameter) so that this device is listed in the device list of the official Web Console.<br>The local configuration is still used for networking.<br>Official Web Console: <a href='http://oa.xiaolin.cc:11211'>http://oa.xiaolin.cc:11211</a>"
 msgstr ""
