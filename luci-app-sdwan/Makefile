@@ -55,6 +55,16 @@ if [ -d /tmp/sdwan_config_backup ] ; then
   mv -f /tmp/sdwan_config_backup /etc/sdwan
   echo "请前往 服务 - SDWAN 界面进行重启插件"
 fi
+# 恢复的配置可能开启了自建 Web 控制台，但当前安装的核心包不一定带 Web 控制台
+# （sdwan-noweb 不包含 sdwan-web）。此时关闭该开关，避免启动时触发不必要的在线下载。
+webbin="$(uci -q get sdwan.@sdwan[0].webbin)"
+[ -z "$webbin" ] && webbin="/usr/bin/sdwan-web"
+if [ "$(uci -q get sdwan.@sdwan[0].web_enabled)" = "1" ] && [ ! -f "$webbin" ] && [ ! -f /tmp/sdwan-web-embed ] ; then
+  echo "未找到${webbin}，已关闭自建 Web 控制台（安装 sdwan 包或从上传程序页面上传 sdwan-web-embed 后可重新开启）"
+  uci -q set sdwan.@sdwan[0].web_enabled='0'
+  uci commit sdwan
+fi
+exit 0
 endef
 
 include $(TOPDIR)/feeds/luci/luci.mk
