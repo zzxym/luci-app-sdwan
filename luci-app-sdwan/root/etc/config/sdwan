@@ -38,5 +38,5 @@ config sdwan
 	list peeradd 'tcp://sghko.xldns.top:16684'
 	list peeradd 'udp://sghko.xldns.top:16684'
 	option web_config 'xlxxadmin'
-	option web_api_host 'http://oa.xiaolin.cc:11211'
+	option web_api_host ''
 	option web_client '1'

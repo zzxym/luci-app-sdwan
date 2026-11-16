@@ -1413,3 +1413,6 @@ msgstr ""
 
 msgid "Also connect to the official configuration server (-w parameter) so that this device is listed in the device list of the official Web Console.<br>The local configuration is still used for networking.<br>Official Web Console: <a href='http://oa.xiaolin.cc:11211'>http://oa.xiaolin.cc:11211</a>"
 msgstr ""
+
+msgid "Leave it empty to use the IP address of this device automatically"
+msgstr ""
