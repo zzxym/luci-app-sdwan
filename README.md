@@ -100,11 +100,9 @@ find bin/ -name "luci-app-sdwan*.ipk"
 
 - `kmod-tun` - TUN/TAP内核模块（必需）
 - `luci-compat` - LuCI兼容层
-- 核心程序 `sdwan` 或 `sdwan-noweb`（二选一；缺少时本包会在首次启动时自动在线下载）
+- 核心程序 `sdwan`（缺少时本包会在首次启动时自动在线下载）
 
-`sdwan` 与 `sdwan-noweb` 都会安装 `/usr/bin/sdwan-core`，两者互斥，不能同时安装：
-- `sdwan`：包含核心程序，并可选内置 Web 控制台（`sdwan-web`）
-- `sdwan-noweb`：仅包含核心程序，不含 Web 控制台
+`sdwan` 仅包含核心程序（`/usr/bin/sdwan-core`），不含 Web 控制台。
 
 本包**不强制**依赖核心包，因此下列两种安装顺序都可以：
 
@@ -130,7 +128,7 @@ opkg install kmod-tun
 
 1. 安装插件后，进入 **VPN → SDWAN**
 2. 在 **上传程序** 页面上传SDWAN二进制文件或直接安装包含核心的ipk/apk包（sdwan.ipk sdwan.apk）
-   - 支持单个文件：`sdwan-core`, `sdwan-cli`, `sdwan-web-embed`
+   - 支持单个文件：`sdwan-core`, `sdwan-cli`
    - 支持压缩包：`.zip`, `.tar.gz`, `.tar`
 3. 在 **SDWAN Core** 页面配置网络参数
 4. 启用并保存配置
@@ -146,7 +144,6 @@ opkg install kmod-tun
 
 - **状态** - 查看运行状态、版本信息、连接信息和实时流量
 - **SDWAN Core** - 配置核心参数（网络名称、密钥、节点等）
-- **自建控制台** - 配置sdwan-web控制台
 - **日志** - 查看运行日志，支持级别过滤
 - **上传程序** - 上传和管理SDWAN二进制文件
 

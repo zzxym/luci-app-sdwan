@@ -346,14 +346,6 @@ local translate = i18n.translate
 			<div id="sdwanbin_size" style="font-size:11px;color:var(--text-secondary);margin-top:2px;"></div>
 		</div>
 		<div style="margin-bottom:16px;">
-			<label style="display:block;font-size:13px;color:var(--text-secondary);margin-bottom:4px;">
-				<%=translate("sdwan-web Binary Path")%>
-			</label>
-			<input type="text" id="webbin" class="config-input" placeholder="/usr/bin/sdwan-web" onblur="checkDiskSpace('webbin')">
-			<div id="webbin_space" style="font-size:11px;color:var(--text-secondary);margin-top:4px;"></div>
-			<div id="webbin_size" style="font-size:11px;color:var(--text-secondary);margin-top:2px;"></div>
-		</div>
-		<div style="margin-bottom:16px;">
 			<label style="display:block;font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:8px;">
 				<%=translate("GitHub Proxy URLs")%>
 			</label>
@@ -462,8 +454,6 @@ local translate = i18n.translate
 		<ul class="upload-info-list">
 			<li><strong>sdwan-core</strong> - <%=translate("Core service binary")%></li>
 			<li><strong>sdwan-cli</strong> - <%=translate("Command line tool")%></li>
-			<li><strong>sdwan-web-embed</strong> - <%=translate("Embedded web console")%> <span style="color:var(--success);">(<%=translate("Recommended")%>)</span></li>
-			<li><strong>sdwan-web</strong> - <%=translate("Web console binary")%> <span style="color:var(--error);">(<%=translate("Will be ignored, use embed version instead")%>)</span></li>
 			<li><strong>*.zip / *.tar.gz</strong> - <%=translate("Compressed archive containing binaries")%></li>
 		</ul>
 		<div style="margin-top:12px;padding:12px;background:rgba(33,150,243,0.1);border-left:3px solid var(--info);border-radius:4px;">
@@ -471,7 +461,7 @@ local translate = i18n.translate
 				<strong><%=translate("Note")%>:</strong>
 			</div>
 			<div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
-				<%=translate("Files will be uploaded to the paths specified above")%>. <%=translate("SDWAN console uses sdwan-web-embed. The sdwan-web binary will be rejected during upload validation.")%>
+				<%=translate("Files will be uploaded to the paths specified above")%>.
 			</div>
 		</div>
 		<div style="margin-top:12px;padding:12px;background:rgba(244,67,54,0.1);border-left:3px solid var(--error);border-radius:4px;">
@@ -751,7 +741,6 @@ function loadConfig() {
 			try {
 				var config = JSON.parse(xhr.responseText);
 				document.getElementById('sdwanbin').value = config.sdwanbin || '/usr/bin/sdwan-core';
-				document.getElementById('webbin').value = config.webbin || '/usr/bin/sdwan-web';
 				
 				// 确保是数组
 				var proxys = config.github_proxys || [];
@@ -763,13 +752,11 @@ function loadConfig() {
 				// 保存原始配置
 				originalConfig = {
 					sdwanbin: config.sdwanbin || '/usr/bin/sdwan-core',
-					webbin: config.webbin || '/usr/bin/sdwan-web',
 					github_proxys: JSON.stringify(proxyList),
 					fallback_version: config.fallback_version || 'sdwan-v2.6.4'
 				};
 				
 				checkDiskSpace('sdwanbin');
-				checkDiskSpace('webbin');
 			} catch (e) {
 				proxyList = [];
 				renderProxyList();
@@ -816,15 +803,8 @@ function checkDiskSpace(inputId) {
 							sizeHtml += (sizeHtml ? ' | ' : '') + 'sdwan-cli ' + response.cli_size;
 						} else {
 							sizeHtml += (sizeHtml ? ' | ' : '') + '<span style="color:var(--error);opacity:0.6;">sdwan-cli: <%=translate("Program not found")%></span>';
-						}
-					} else if (inputId === 'webbin') {
-						if (response.web_size) {
-							sizeHtml = 'sdwan-web ' + response.web_size;
-						} else {
-							sizeHtml = '<span style="color:var(--error);opacity:0.6;">sdwan-web: <%=translate("Program not found")%></span>';
-						}
-					}
-					sizeDiv.innerHTML = sizeHtml ? '<span style="color:#999;opacity:0.8;"><%=translate("Program size")%>: ' + sizeHtml + '</span>' : '';
+							}
+							sizeDiv.innerHTML = sizeHtml ? '<span style="color:#999;opacity:0.8;"><%=translate("Program size")%>: ' + sizeHtml + '</span>' : '';
 				} else {
 					spaceDiv.innerHTML = '<span style="color:var(--error);"><%=translate("Unable to query disk space")%></span>';
 					sizeDiv.innerHTML = '';
@@ -841,7 +821,6 @@ function checkDiskSpace(inputId) {
 function getCurrentConfig() {
 	return {
 		sdwanbin: document.getElementById('sdwanbin').value || '/usr/bin/sdwan-core',
-		webbin: document.getElementById('webbin').value || '/usr/bin/sdwan-web',
 		github_proxys: JSON.stringify(proxyList),
 		fallback_version: versionManager.getCurrentVersion() || 'sdwan-v2.6.4'
 	};
@@ -866,7 +845,6 @@ function saveConfig() {
 	
 	var data = {
 		sdwanbin: document.getElementById('sdwanbin').value || '/usr/bin/sdwan-core',
-		webbin: document.getElementById('webbin').value || '/usr/bin/sdwan-web',
 		github_proxys: proxyList,
 		fallback_version: versionManager.getCurrentVersion() || 'sdwan-v2.6.4'
 	};
@@ -961,7 +939,7 @@ window.onload = function() {
 	alertBox = document.getElementById('alert_box');
 	restartModal = document.getElementById('restart_modal');
 	
-	var validNames = ['sdwan-core', 'sdwan-cli', 'sdwan-web', 'sdwan-web-embed'];
+	var validNames = ['sdwan-core', 'sdwan-cli'];
 
 	// 拖放事件
 	uploadArea.addEventListener('dragover', function(e) {
@@ -997,7 +975,7 @@ window.onload = function() {
 };
 
 function handleFile(file) {
-	var validNames = ['sdwan-core', 'sdwan-cli', 'sdwan-web', 'sdwan-web-embed'];
+	var validNames = ['sdwan-core', 'sdwan-cli'];
 	var filename = file.name;
 	
 	// 检查是否是压缩文件

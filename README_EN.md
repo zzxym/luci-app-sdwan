@@ -94,11 +94,9 @@ find bin/ -name "luci-app-sdwan*.ipk"
 
 - `kmod-tun` - TUN/TAP kernel module (required)
 - `luci-compat` - LuCI compatibility layer
-- Core program `sdwan` or `sdwan-noweb` (either one; downloaded automatically on first start if missing)
+- Core program `sdwan` (downloaded automatically on first start if missing)
 
-`sdwan` and `sdwan-noweb` both install `/usr/bin/sdwan-core`, so they are mutually exclusive:
-- `sdwan` - core program, optionally with the embedded web console (`sdwan-web`)
-- `sdwan-noweb` - core program only, without the web console
+`sdwan` installs the core program (`/usr/bin/sdwan-core`) only, without the web console.
 
 This package does **not** force a dependency on the core package, so both installation orders work:
 
@@ -124,7 +122,7 @@ opkg install kmod-tun
 
 1. After installing the plugin, navigate to **VPN → SDWAN**
 2. Upload SDWAN binary files on the **Upload Program** page, or directly install the ipk/apk package containing the core (sdwan.ipk / sdwan.apk)
-   - Supports single files: `sdwan-core`, `sdwan-cli`, `sdwan-web-embed`
+   - Supports single files: `sdwan-core`, `sdwan-cli`
    - Supports compressed packages: `.zip`, `.tar.gz`, `.tar`
 3. Configure network parameters on the **SDWAN Core** page
 4. Enable and save the configuration
@@ -140,7 +138,6 @@ Two configuration methods are supported:
 
 - **Status** - View running status, version info, connection info, and real-time traffic
 - **SDWAN Core** - Configure core parameters (network name, secret key, nodes, etc.)
-- **Self-hosted Console** - Configure sdwan-web console
 - **Logs** - View running logs with level filtering support
 - **Upload Program** - Upload and manage SDWAN binary files
 

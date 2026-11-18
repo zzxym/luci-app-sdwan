@@ -50,9 +50,8 @@ function index()
 	entry({"admin", "vpn", "sdwan"}, firstchild(),_("SDWAN"), 46).dependent = true
 	entry({"admin", "vpn", "sdwan", "status"}, cbi("sdwan_status"),_("Status"), 1).leaf = true
 	entry({"admin", "vpn", "sdwan", "config"}, cbi("sdwan"),_("SDWAN Core"), 2).leaf = true
-	entry({"admin", "vpn", "sdwan", "webconsole"}, template("sdwan/sdwan_web"),_("SDWAN Web"), 3).leaf = true
-	entry({"admin", "vpn", "sdwan", "log"}, template("sdwan/sdwan_log"),_("Logs"), 4).leaf = true
-	entry({"admin", "vpn", "sdwan", "upload"}, template("sdwan/sdwan_upload"),_("Upload Program"), 5).leaf = true
+	entry({"admin", "vpn", "sdwan", "log"}, template("sdwan/sdwan_log"),_("Logs"), 3).leaf = true
+	entry({"admin", "vpn", "sdwan", "upload"}, template("sdwan/sdwan_upload"),_("Upload Program"), 4).leaf = true
 	entry({"admin", "vpn", "sdwan", "upload_binary"}, call("upload_binary")).leaf = true
 	entry({"admin", "vpn", "sdwan", "get_upload_config"}, call("get_upload_config")).leaf = true
 	entry({"admin", "vpn", "sdwan", "save_upload_config"}, call("save_upload_config")).leaf = true
@@ -61,19 +60,11 @@ function index()
 	entry({"admin", "vpn", "sdwan", "get_log"}, call("get_log")).leaf = true
 	entry({"admin", "vpn", "sdwan", "get_log_size"}, call("get_log_size")).leaf = true
 	entry({"admin", "vpn", "sdwan", "clear_log"}, call("clear_log")).leaf = true
-	entry({"admin", "vpn", "sdwan", "get_wlog"}, call("get_wlog")).leaf = true
-	entry({"admin", "vpn", "sdwan", "get_wlog_size"}, call("get_wlog_size")).leaf = true
-	entry({"admin", "vpn", "sdwan", "clear_wlog"}, call("clear_wlog")).leaf = true
 	entry({"admin", "vpn", "sdwan", "clear_version_cache"}, call("clear_version_cache")).leaf = true
-	entry({"admin", "vpn", "sdwan", "get_web_config"}, call("get_web_config")).leaf = true
-	entry({"admin", "vpn", "sdwan", "save_web_config"}, call("save_web_config")).leaf = true
-	entry({"admin", "vpn", "sdwan", "reset_database"}, call("reset_database")).leaf = true
-	entry({"admin", "vpn", "sdwan", "check_web_status"}, call("check_web_status")).leaf = true
 	entry({"admin", "vpn", "sdwan", "api_status"}, call("act_status")).leaf = true
 	entry({"admin", "vpn", "sdwan", "api_conninfo"}, call("act_conninfo")).leaf = true
 	entry({"admin", "vpn", "sdwan", "restart_service"}, call("restart_service")).leaf = true
 	entry({"admin", "vpn", "sdwan", "toggle_core"}, call("toggle_core")).leaf = true
-	entry({"admin", "vpn", "sdwan", "toggle_web"}, call("toggle_web")).leaf = true
 	entry({"admin", "vpn", "sdwan", "download_sdwan"}, call("download_sdwan")).leaf = true
 	entry({"admin", "vpn", "sdwan", "download_progress"}, call("download_progress")).leaf = true
 	entry({"admin", "vpn", "sdwan", "cancel_download"}, call("cancel_download")).leaf = true
@@ -83,16 +74,11 @@ function act_status()
 	local e = {}
 	local sys  = require "luci.sys"
 	local uci  = require "luci.model.uci".cursor()
-	local port = tonumber(uci:get_first("sdwan", "sdwan", "web_html_port"))
 	e.crunning = luci.sys.call("pgrep sdwan-core >/dev/null") == 0
-	e.wrunning = luci.sys.call("pgrep sdwan-web >/dev/null") == 0
-	e.port = (port or 0)
 	e.cenabled = uci:get_first("sdwan", "sdwan", "enabled") == "1"
-	e.wenabled = uci:get_first("sdwan", "sdwan", "web_enabled") == "1"
 	
 	-- 使用 Lua 原生计算运行时长
 	e.etsta = calc_uptime("/tmp/sdwan_time")
-	e.etwebsta = calc_uptime("/tmp/sdwanweb_time")
 	
 	-- 获取 CPU 和内存使用率（使用原始命令）
 	local command2 = io.popen('test ! -z "`pidof sdwan-core`" && (top -b -n1 | grep -E "$(pidof sdwan-core)" 2>/dev/null | grep -v grep | awk \'{for (i=1;i<=NF;i++) {if ($i ~ /sdwan-core/) break; else cpu=i}} END {print $cpu}\')')
@@ -102,15 +88,7 @@ function act_status()
 	local command3 = io.popen("test ! -z `pidof sdwan-core` && (cat /proc/$(pidof sdwan-core | awk '{print $NF}')/status | grep -w VmRSS | awk '{printf \"%.2f MB\", $2/1024}')")
 	e.etram = command3:read("*all")
 	command3:close()
-	
-	local command4 = io.popen('test ! -z "`pidof sdwan-web`" && (top -b -n1 | grep -E "$(pidof sdwan-web)" 2>/dev/null | grep -v grep | awk \'{for (i=1;i<=NF;i++) {if ($i ~ /sdwan-web/) break; else cpu=i}} END {print $cpu}\')')
-	e.etwebcpu = command4:read("*all")
-	command4:close()
-	
-	local command5 = io.popen("test ! -z `pidof sdwan-web` && (cat /proc/$(pidof sdwan-web | awk '{print $NF}')/status | grep -w VmRSS | awk '{printf \"%.2f MB\", $2/1024}')")
-	e.etwebram = command5:read("*all")
-	command5:close()
-	
+
 	-- 获取版本信息
 	local cached_newtag = safe_read_file("/tmp/sdwannew.tag")
 	if cached_newtag and cached_newtag ~= "" then
@@ -134,17 +112,6 @@ function act_status()
 		if f then f:write(e.ettag); f:close() end
 	end
 	
-	local cached_webtag = safe_read_file("/tmp/sdwanweb.tag")
-	if cached_webtag and cached_webtag ~= "" then
-		e.etwebtag = cached_webtag:gsub("[\r\n]+", "")
-	else
-		local sdwanwebbin = uci:get_first("sdwan", "sdwan", "webbin") or "/usr/bin/sdwan-web"
-		e.etwebtag = safe_exec(sdwanwebbin .. " -V 2>/dev/null | sed 's/^[^0-9]*//'")
-		if e.etwebtag == "" or e.etwebtag == nil then e.etwebtag = "unknown" end
-		local f = io.open("/tmp/sdwanweb.tag", "w")
-		if f then f:write(e.etwebtag); f:close() end
-	end
-	
 	e.no_tun = uci:get_first("sdwan", "sdwan", "no_tun") == "1"
 	e.dev_name = uci:get_first("sdwan", "sdwan", "dev_name") or "tun0"
 
@@ -160,7 +127,6 @@ function get_upload_config()
 	
 	local config = {
 		sdwanbin = uci:get_first("sdwan", "sdwan", "sdwanbin") or "/usr/bin/sdwan-core",
-		webbin = uci:get_first("sdwan", "sdwan", "webbin") or "/usr/bin/sdwan-web",
 		github_proxys = {},
 		fallback_version = uci:get_first("sdwan", "sdwan", "fallback_version") or "sdwan-v2.6.4"
 	}
@@ -198,7 +164,6 @@ function save_upload_config()
 	
 	-- 保存配置
 	uci:set("sdwan", "@sdwan[0]", "sdwanbin", data.sdwanbin or "/usr/bin/sdwan-core")
-	uci:set("sdwan", "@sdwan[0]", "webbin", data.webbin or "/usr/bin/sdwan-web")
 	uci:set("sdwan", "@sdwan[0]", "fallback_version", data.fallback_version or "sdwan-v2.6.4")
 	
 	-- 删除旧的代理列表
@@ -271,13 +236,6 @@ function get_disk_space()
 					local size = luci.sys.exec("ls -lh '" .. cli_path .. "' 2>/dev/null | awk '{print $5}'")
 					if size and size ~= "" then
 						result.cli_size = size:gsub("[\r\n]+$", "")
-					end
-				end
-			elseif input_type == "webbin" and full_path then
-				if nixio.fs.access(full_path) then
-					local size = luci.sys.exec("ls -lh '" .. full_path .. "' 2>/dev/null | awk '{print $5}'")
-					if size and size ~= "" then
-						result.web_size = size:gsub("[\r\n]+$", "")
 					end
 				end
 			end
@@ -367,15 +325,9 @@ function get_log_size()
     local size = luci.sys.exec("[ -f '/tmp/sdwan.log' ] && stat -c%s /tmp/sdwan.log 2>/dev/null || echo 0")
     luci.http.prepare_content("application/json")
     luci.http.write_json({size = tonumber(size) or 0})
-end
+    end
 
-function get_wlog_size()
-    local size = luci.sys.exec("[ -f '/tmp/sdwanweb.log' ] && stat -c%s /tmp/sdwanweb.log 2>/dev/null || echo 0")
-    luci.http.prepare_content("application/json")
-    luci.http.write_json({size = tonumber(size) or 0})
-end
-
-function clear_log()
+    function clear_log()
 	luci.sys.call("echo '' >/tmp/sdwan.log")
 end
 
@@ -453,11 +405,7 @@ function upload_binary()
 		os.execute("find " .. extract_dir .. "/sdwan-linux-* -maxdepth 1 -type f -exec mv {} " .. extract_dir .. "/ \\; 2>/dev/null")
 		cleanup_files(tmp_file)
 		
-		if nixio.fs.access(extract_dir .. "/sdwan-web") then
-			nixio.fs.remove(extract_dir .. "/sdwan-web")
-		end
-		
-		local binaries = {"sdwan-core", "sdwan-cli", "sdwan-web-embed"}
+		local binaries = {"sdwan-core", "sdwan-cli"}
 		local valid_bins = {}
 		
 		for _, bin in ipairs(binaries) do
@@ -479,13 +427,10 @@ function upload_binary()
 		end
 		
 		local core_path = uci:get_first("sdwan", "sdwan", "sdwanbin") or "/usr/bin/sdwan-core"
-		local web_path = uci:get_first("sdwan", "sdwan", "webbin") or "/usr/bin/sdwan-web"
 		
 		for _, bin in ipairs(valid_bins) do
 			local final_path
-			if bin.name == "sdwan-web-embed" then
-				final_path = web_path
-			elseif bin.name == "sdwan-core" then
+			if bin.name == "sdwan-core" then
 				final_path = core_path
 			elseif bin.name == "sdwan-cli" then
 				local core_dir = core_path:match("(.*/)")
@@ -511,20 +456,13 @@ function upload_binary()
 		
 		os.execute("rm -rf " .. extract_dir)
 		nixio.fs.remove("/tmp/sdwan.tag")
-		nixio.fs.remove("/tmp/sdwanweb.tag")
 		http.write_json({success = true, message = translate("Successfully installed") .. " " .. #valid_bins .. " " .. translate("binary file(s)")})
 	else
-		local valid_names = {["sdwan-core"] = true, ["sdwan-cli"] = true, ["sdwan-web-embed"] = true, ["sdwan-web"] = true}
+		local valid_names = {["sdwan-core"] = true, ["sdwan-cli"] = true}
 		
 		if not valid_names[filename] then
 			cleanup_files(tmp_file)
 			http.write_json({success = false, message = translate("Not a valid SDWAN program")})
-			return
-		end
-		
-		if filename == "sdwan-web" then
-			cleanup_files(tmp_file)
-			http.write_json({success = false, message = translate("sdwan-web is not used by this plugin, please upload sdwan-web-embed")})
 			return
 		end
 		
@@ -536,12 +474,9 @@ function upload_binary()
 		end
 		
 		local core_path = uci:get_first("sdwan", "sdwan", "sdwanbin") or "/usr/bin/sdwan-core"
-		local web_path = uci:get_first("sdwan", "sdwan", "webbin") or "/usr/bin/sdwan-web"
 		
 		local final_path
-		if filename == "sdwan-web-embed" then
-			final_path = web_path
-		elseif filename == "sdwan-core" then
+		if filename == "sdwan-core" then
 			final_path = core_path
 		elseif filename == "sdwan-cli" then
 			local core_dir = core_path:match("(.*/)")
@@ -564,32 +499,14 @@ function upload_binary()
 		end
 		
 		nixio.fs.remove("/tmp/sdwan.tag")
-		nixio.fs.remove("/tmp/sdwanweb.tag")
 		http.write_json({success = true, message = translate("Binary uploaded successfully to") .. " " .. final_path})
 	end
-end
-
-function get_wlog()
-    local log = ""
-    local files = {"/tmp/sdwanweb.log"}
-    for i, file in ipairs(files) do
-        if luci.sys.call("[ -f '" .. file .. "' ]") == 0 then
-            log = log .. luci.sys.exec("sed 's/\\x1b\\[[0-9;]*m//g' " .. file)
-        end
-    end
-    luci.http.write(log)
-end
-
-function clear_wlog()
-	luci.sys.call("echo '' >/tmp/sdwanweb.log")
 end
 
 function clear_version_cache()
 	local type = luci.http.formvalue("type")
 	if type == "core" then
 		luci.sys.call("rm -f /tmp/sdwannew.tag /tmp/sdwan.tag")
-	elseif type == "web" then
-		luci.sys.call("rm -f /tmp/sdwannew.tag /tmp/sdwanweb.tag")
 	end
 	luci.http.write("OK")
 end
@@ -662,193 +579,6 @@ function act_conninfo()
 end
 
 
-function get_web_config()
-	luci.http.prepare_content("application/json")
-	local uci = require "luci.model.uci".cursor()
-	
-	local config = {
-		web_enabled = uci:get_first("sdwan", "sdwan", "web_enabled") or "0",
-		web_db_path = uci:get_first("sdwan", "sdwan", "web_db_path") or "/etc/sdwan/et.db",
-		web_protocol = uci:get_first("sdwan", "sdwan", "web_protocol") or "udp",
-		web_port = uci:get_first("sdwan", "sdwan", "web_port") or "22020",
-		web_fw_web = uci:get_first("sdwan", "sdwan", "web_fw_web") or "0",
-		web_api_port = uci:get_first("sdwan", "sdwan", "web_api_port") or "11211",
-		web_html_port = uci:get_first("sdwan", "sdwan", "web_html_port") or "11211",
-		web_api_addr = uci:get_first("sdwan", "sdwan", "web_api_addr") or "0.0.0.0",
-		web_html_addr = uci:get_first("sdwan", "sdwan", "web_html_addr") or "0.0.0.0",
-		web_fw_api = uci:get_first("sdwan", "sdwan", "web_fw_api") or "0",
-		web_api_host = uci:get_first("sdwan", "sdwan", "web_api_host") or "",
-		web_geoip_db = uci:get_first("sdwan", "sdwan", "web_geoip_db") or "",
-		web_disable_registration = uci:get_first("sdwan", "sdwan", "web_disable_registration") or "0",
-		web_allow_auto_create_user = uci:get_first("sdwan", "sdwan", "web_allow_auto_create_user") or "0",
-		web_weblog = uci:get_first("sdwan", "sdwan", "web_weblog") or "off",
-		-- OIDC配置
-		web_oidc_enabled = uci:get_first("sdwan", "sdwan", "web_oidc_enabled") or "0",
-		web_oidc_issuer_url = uci:get_first("sdwan", "sdwan", "web_oidc_issuer_url") or "",
-		web_oidc_client_id = uci:get_first("sdwan", "sdwan", "web_oidc_client_id") or "",
-		web_oidc_client_secret = uci:get_first("sdwan", "sdwan", "web_oidc_client_secret") or "",
-		web_oidc_redirect_url = uci:get_first("sdwan", "sdwan", "web_oidc_redirect_url") or "",
-		web_oidc_username_claim = uci:get_first("sdwan", "sdwan", "web_oidc_username_claim") or "preferred_username",
-		web_oidc_scopes = uci:get_first("sdwan", "sdwan", "web_oidc_scopes") or "openid profile",
-		web_oidc_frontend_base_url = uci:get_first("sdwan", "sdwan", "web_oidc_frontend_base_url") or "",
-		web_oidc_disable_pkce = uci:get_first("sdwan", "sdwan", "web_oidc_disable_pkce") or "0",
-		-- Webhook配置
-		web_webhook_enabled = uci:get_first("sdwan", "sdwan", "web_webhook_enabled") or "0",
-		web_webhook_url = uci:get_first("sdwan", "sdwan", "web_webhook_url") or "",
-		web_webhook_secret = uci:get_first("sdwan", "sdwan", "web_webhook_secret") or "",
-		web_internal_auth_token = uci:get_first("sdwan", "sdwan", "web_internal_auth_token") or "",
-		web_web_instance_id = uci:get_first("sdwan", "sdwan", "web_web_instance_id") or "",
-		web_web_instance_api_base_url = uci:get_first("sdwan", "sdwan", "web_web_instance_api_base_url") or ""
-	}
-	
-	luci.http.write_json(config)
-end
-
-function save_web_config()
-	local uci = require "luci.model.uci".cursor()
-	local http = require "luci.http"
-	
-	local web_enabled = http.formvalue("web_enabled") or "0"
-	local web_db_path = http.formvalue("web_db_path") or "/etc/sdwan/et.db"
-	local web_protocol = http.formvalue("web_protocol") or "udp"
-	local web_port = http.formvalue("web_port") or "22020"
-	local web_fw_web = http.formvalue("web_fw_web") or "0"
-	local web_api_port = http.formvalue("web_api_port") or "11211"
-	local web_html_port = http.formvalue("web_html_port") or "11211"
-	local web_api_addr = http.formvalue("web_api_addr") or "0.0.0.0"
-	local web_html_addr = http.formvalue("web_html_addr") or "0.0.0.0"
-	local web_fw_api = http.formvalue("web_fw_api") or "0"
-	local web_api_host = http.formvalue("web_api_host") or ""
-	local web_geoip_db = http.formvalue("web_geoip_db") or ""
-	local web_disable_registration = http.formvalue("web_disable_registration") or "0"
-	local web_allow_auto_create_user = http.formvalue("web_allow_auto_create_user") or "0"
-	local web_weblog = http.formvalue("web_weblog") or "off"
-	-- OIDC
-	local web_oidc_enabled = http.formvalue("web_oidc_enabled") or "0"
-	local web_oidc_issuer_url = http.formvalue("web_oidc_issuer_url") or ""
-	local web_oidc_client_id = http.formvalue("web_oidc_client_id") or ""
-	local web_oidc_client_secret = http.formvalue("web_oidc_client_secret") or ""
-	local web_oidc_redirect_url = http.formvalue("web_oidc_redirect_url") or ""
-	local web_oidc_username_claim = http.formvalue("web_oidc_username_claim") or "preferred_username"
-	local web_oidc_scopes = http.formvalue("web_oidc_scopes") or "openid profile"
-	local web_oidc_frontend_base_url = http.formvalue("web_oidc_frontend_base_url") or ""
-	local web_oidc_disable_pkce = http.formvalue("web_oidc_disable_pkce") or "0"
-	-- Webhook
-	local web_webhook_enabled = http.formvalue("web_webhook_enabled") or "0"
-	local web_webhook_url = http.formvalue("web_webhook_url") or ""
-	local web_webhook_secret = http.formvalue("web_webhook_secret") or ""
-	local web_internal_auth_token = http.formvalue("web_internal_auth_token") or ""
-	local web_web_instance_id = http.formvalue("web_web_instance_id") or ""
-	local web_web_instance_api_base_url = http.formvalue("web_web_instance_api_base_url") or ""
-	
-	uci:set("sdwan", "@sdwan[0]", "web_enabled", web_enabled)
-	uci:set("sdwan", "@sdwan[0]", "web_db_path", web_db_path)
-	uci:set("sdwan", "@sdwan[0]", "web_protocol", web_protocol)
-	uci:set("sdwan", "@sdwan[0]", "web_port", web_port)
-	uci:set("sdwan", "@sdwan[0]", "web_fw_web", web_fw_web)
-	uci:set("sdwan", "@sdwan[0]", "web_api_port", web_api_port)
-	uci:set("sdwan", "@sdwan[0]", "web_html_port", web_html_port)
-	uci:set("sdwan", "@sdwan[0]", "web_api_addr", web_api_addr)
-	uci:set("sdwan", "@sdwan[0]", "web_html_addr", web_html_addr)
-	uci:set("sdwan", "@sdwan[0]", "web_fw_api", web_fw_api)
-	uci:set("sdwan", "@sdwan[0]", "web_api_host", web_api_host)
-	uci:set("sdwan", "@sdwan[0]", "web_geoip_db", web_geoip_db)
-	uci:set("sdwan", "@sdwan[0]", "web_disable_registration", web_disable_registration)
-	uci:set("sdwan", "@sdwan[0]", "web_allow_auto_create_user", web_allow_auto_create_user)
-	uci:set("sdwan", "@sdwan[0]", "web_weblog", web_weblog)
-	-- OIDC
-	uci:set("sdwan", "@sdwan[0]", "web_oidc_enabled", web_oidc_enabled)
-	uci:set("sdwan", "@sdwan[0]", "web_oidc_issuer_url", web_oidc_issuer_url)
-	uci:set("sdwan", "@sdwan[0]", "web_oidc_client_id", web_oidc_client_id)
-	uci:set("sdwan", "@sdwan[0]", "web_oidc_client_secret", web_oidc_client_secret)
-	uci:set("sdwan", "@sdwan[0]", "web_oidc_redirect_url", web_oidc_redirect_url)
-	uci:set("sdwan", "@sdwan[0]", "web_oidc_username_claim", web_oidc_username_claim)
-	uci:set("sdwan", "@sdwan[0]", "web_oidc_scopes", web_oidc_scopes)
-	uci:set("sdwan", "@sdwan[0]", "web_oidc_frontend_base_url", web_oidc_frontend_base_url)
-	uci:set("sdwan", "@sdwan[0]", "web_oidc_disable_pkce", web_oidc_disable_pkce)
-	-- Webhook
-	uci:set("sdwan", "@sdwan[0]", "web_webhook_enabled", web_webhook_enabled)
-	uci:set("sdwan", "@sdwan[0]", "web_webhook_url", web_webhook_url)
-	uci:set("sdwan", "@sdwan[0]", "web_webhook_secret", web_webhook_secret)
-	uci:set("sdwan", "@sdwan[0]", "web_internal_auth_token", web_internal_auth_token)
-	uci:set("sdwan", "@sdwan[0]", "web_web_instance_id", web_web_instance_id)
-	uci:set("sdwan", "@sdwan[0]", "web_web_instance_api_base_url", web_web_instance_api_base_url)
-	
-	uci:commit("sdwan")
-	
-	http.prepare_content("application/json")
-	http.write_json({success = true})
-end
-
-function reset_database()
-	luci.http.prepare_content("application/json")
-	
-	local json = require "luci.jsonc"
-	local nixio = require "nixio"
-	
-	-- 从请求中获取数据库路径
-	local req_data = json.parse(luci.http.content())
-	if not req_data or not req_data.db_path then
-		luci.http.write_json({success = false, message = "Missing db_path parameter"})
-		return
-	end
-	
-	local db_path = req_data.db_path
-	
-	-- 安全检查：路径必须是绝对路径且不能是根目录或系统关键目录
-	if not db_path:match("^/") or db_path == "/" or 
-	   db_path:match("^/bin") or db_path:match("^/sbin") or 
-	   db_path:match("^/usr/bin") or db_path:match("^/usr/sbin") or
-	   db_path:match("^/lib") or db_path:match("^/boot") then
-		luci.http.write_json({success = false, message = "Invalid database path"})
-		return
-	end
-	
-	-- 构建要删除的文件列表
-	local files_to_delete = {
-		db_path,
-		db_path .. "-wal",
-		db_path .. "-shm"
-	}
-	
-	local deleted_files = {}
-	
-	-- 删除文件
-	for _, file in ipairs(files_to_delete) do
-		if nixio.fs.access(file) then
-			local result = os.remove(file)
-			if result then
-				table.insert(deleted_files, file)
-			end
-		end
-	end
-	
-	if #deleted_files > 0 then
-		luci.http.write_json({
-			success = true,
-			deleted_files = deleted_files,
-			message = "Database reset successfully"
-		})
-	else
-		luci.http.write_json({
-			success = false,
-			message = "No database files found or deletion failed"
-		})
-	end
-end
-
-function check_web_status()
-	local running = luci.sys.call("pgrep sdwan-web >/dev/null") == 0
-	local uci = require "luci.model.uci".cursor()
-	local port = uci:get_first("sdwan", "sdwan", "web_html_port") or "11211"
-	
-	luci.http.prepare_content("application/json")
-	luci.http.write_json({
-		running = running,
-		port = port
-	})
-end
-
 function restart_service()
 	luci.http.prepare_content("application/json")
 	luci.sys.exec("/etc/init.d/sdwan restart >/dev/null 2>&1 &")
@@ -870,20 +600,6 @@ function toggle_core()
 	luci.http.write_json({success = true})
 end
 
-function toggle_web()
-	local enabled = luci.http.formvalue("enabled")
-	local uci = require "luci.model.uci".cursor()
-	uci:set("sdwan", uci:get_first("sdwan", "sdwan"), "web_enabled", enabled)
-	uci:commit("sdwan")
-	
-	if enabled == "1" then
-		luci.sys.exec("/etc/init.d/sdwan start >/dev/null 2>&1 &")
-	else
-		luci.sys.exec("/etc/init.d/sdwan restart >/dev/null 2>&1 &")
-	end
-	luci.http.prepare_content("application/json")
-	luci.http.write_json({success = true})
-end
 -- 检测CPU架构
 local function detect_arch()
 	local cputype = safe_exec("uname -ms | tr ' ' '_' | tr '[A-Z]' '[a-z]'")
@@ -1070,7 +786,7 @@ function download_sdwan()
 	-- 2. 循环尝试不同的镜像地址下载、解压、验证
 	local download_success = false
 	local download_url = ""
-	local core_file, cli_file, web_file
+	local core_file, cli_file
 	
 	for _, proxy in ipairs(proxies) do
 		-- 检查是否被取消
@@ -1122,12 +838,8 @@ function download_sdwan()
 					if subdir and subdir ~= "" then
 						core_file = subdir .. "/sdwan-core"
 						cli_file = subdir .. "/sdwan-cli"
-						web_file = subdir .. "/sdwan-web-embed"
 						
 						local files_ok = nixio.fs.access(core_file) and nixio.fs.access(cli_file)
-						if arch ~= "mips" and arch ~= "mipsel" then
-							files_ok = files_ok and nixio.fs.access(web_file)
-						end
 						
 						if files_ok then
 							-- 检查是否被取消
@@ -1140,10 +852,7 @@ function download_sdwan()
 							
 							-- 先赋予执行权限，再测试程序
 							local test_files = {core_file, cli_file}
-							if arch ~= "mips" and arch ~= "mipsel" then
-								table.insert(test_files, web_file)
-							end
-							
+
 							local test_ok = true
 							for _, file in ipairs(test_files) do
 								os.execute("chmod +x " .. file)
@@ -1185,7 +894,6 @@ function download_sdwan()
 	-- 3. 从UCI获取路径并安装
 	local uci = require "luci.model.uci".cursor()
 	local sdwanbin = uci:get_first("sdwan", "sdwan", "sdwanbin") or "/usr/bin/sdwan-core"
-	local sdwanwebbin = uci:get_first("sdwan", "sdwan", "webbin") or "/usr/bin/sdwan-web"
 	
 	local core_dir = sdwanbin:match("^(.*/)[^/]+$") or "/usr/bin/"
 	
@@ -1193,10 +901,6 @@ function download_sdwan()
 		{src = core_file, dest = sdwanbin},
 		{src = cli_file, dest = core_dir .. "sdwan-cli"}
 	}
-	
-	if arch ~= "mips" and arch ~= "mipsel" then
-		table.insert(programs, {src = web_file, dest = sdwanwebbin})
-	end
 	
 	-- 安装并验证
 	for _, prog in ipairs(programs) do
@@ -1224,7 +928,6 @@ function download_sdwan()
 	os.execute("rm -f " .. cancel_file)
 	os.execute("rm -f " .. progress_file)
 	nixio.fs.remove("/tmp/sdwan.tag")
-	nixio.fs.remove("/tmp/sdwanweb.tag")
 	
 	luci.http.write_json({
 		success = true,

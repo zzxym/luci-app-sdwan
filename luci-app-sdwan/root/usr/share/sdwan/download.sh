@@ -66,7 +66,7 @@ download_binary() {
 		   wget --no-check-certificate --timeout=10 --tries=3 -O /tmp/sdwan.zip "${proxy}${download_url}"; then
 			
 			unzip -j -q -o /tmp/sdwan.zip -d /tmp
-			chmod +x /tmp/sdwan-core /tmp/sdwan-cli /tmp/sdwan-web /tmp/sdwan-web-embed 2>/dev/null || true
+			chmod +x /tmp/sdwan-core /tmp/sdwan-cli 2>/dev/null || true
 			rm -rf /tmp/sdwan.zip
 			
 			log_message "INFO" "sdwan" "下载成功" "/tmp/sdwan.log"
@@ -102,12 +102,6 @@ check_and_download() {
 				chmod +x "$sdwanbin" 2>/dev/null
 			fi
 			
-			if [ "$(uci -q get sdwan.@sdwan[0].web_enabled)" = "1" ]; then
-				local webbin=$(uci -q get sdwan.@sdwan[0].webbin)
-				[ -z "$webbin" ] && webbin="/usr/bin/sdwan-web"
-				mv -f /tmp/sdwan-web-embed "$webbin" 2>/dev/null || true
-				chmod +x "$webbin" 2>/dev/null
-			fi
 			
 			return 0
 		fi

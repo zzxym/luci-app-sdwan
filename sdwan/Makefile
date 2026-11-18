@@ -53,25 +53,14 @@ RSTRIP:=:
 define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
-	TITLE:=SDWAN core with web console
+	TITLE:=SDWAN core without web console
 	DEPENDS:=@(x86_64||arm||aarch64||mipsel||mips) +kmod-tun
 	URL:=https://github.com/zzxym/sdwan
 	MENU:=1
 endef
 
 define Package/$(PKG_NAME)/description
-  SDWAN core program, with the web console (sdwan-web) built in.
-  Mutually exclusive with sdwan-noweb.
-endef
-
-define Package/$(PKG_NAME)/config
-	config SDWAN_INCLUDE_WEBCONSOLE
-		bool "Include Web Console (sdwan-web)"
-		depends on PACKAGE_$(PKG_NAME)
-		depends on !(mips || mipsel)
-		default y
-		help
-		  Install the sdwan-web web console.
+  SDWAN core program only, without the web console (sdwan-web).
 endef
 
 define Build/Prepare
@@ -92,10 +81,6 @@ define Package/$(PKG_NAME)/install
 	chmod 0755 $(1)/usr/bin/sdwan-core
 	$(CP) $(PKG_BUILD_DIR)/sdwan-cli $(1)/usr/bin/sdwan-cli
 	chmod 0755 $(1)/usr/bin/sdwan-cli
-ifdef CONFIG_SDWAN_INCLUDE_WEBCONSOLE
-	$(CP) $(PKG_BUILD_DIR)/sdwan-web-embed $(1)/usr/bin/sdwan-web
-	chmod 0755 $(1)/usr/bin/sdwan-web
-endif
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
