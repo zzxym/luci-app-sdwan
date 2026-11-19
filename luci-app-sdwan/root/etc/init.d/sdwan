@@ -164,23 +164,7 @@ check_config() {
 		   if [ "$web_client" = "1" ] && setup_web_client ; then
 				web_client_args="${WEB_CLIENT_ARGS}"
 		   fi
-		   procd_set_param command /bin/sh -c "
-			cd /tmp ; ${sdwanbin} -c ${config_file} ${web_client_args} --console-log-level ${log} >> /tmp/sdwan.log 2>&1 &
-			ET_CORE_PID=\$!
-			{
-			while true; do
-				LOG_SIZE=\$(ls -l /tmp/sdwan.log | awk '{print int(\$5/1024)}')
-				if [ \$LOG_SIZE -gt 5120 ]; then
-					tail -n 500 /tmp/sdwan.log > /tmp/sdwan.log.tmp
-					mv /tmp/sdwan.log.tmp /tmp/sdwan.log
-				fi
-				sleep 300
-			done
-			} &
-			LOG_MANAGEMENT_PID=\$!
-			trap \"kill -TERM \$ET_CORE_PID; kill -TERM \$LOG_MANAGEMENT_PID; exit\" SIGINT SIGTERM EXIT
-			wait \$ET_CORE_PID
-		   "
+		   procd_set_param command /bin/sh -c "cd /tmp ; exec ${sdwanbin} -c ${config_file} ${web_client_args} --console-log-level ${log} >> /tmp/sdwan.log 2>&1"
 		   
 }
 
@@ -483,23 +467,7 @@ EOF
 				fi
 				[ -z "$desvice_name" ] || core_cmd="${core_cmd} --hostname $(shell_quote "$desvice_name")"
 			fi
-	     		procd_set_param command /bin/sh -c "
-			cd /tmp ; ${sdwanbin} ${core_cmd} --console-log-level ${log} >> /tmp/sdwan.log 2>&1 &
-			ET_CORE_PID=\$!
-			{
-			while true; do
-				LOG_SIZE=\$(ls -l /tmp/sdwan.log | awk '{print int(\$5/1024)}')
-				if [ \$LOG_SIZE -gt 5120 ]; then
-					tail -n 500 /tmp/sdwan.log > /tmp/sdwan.log.tmp
-					mv /tmp/sdwan.log.tmp /tmp/sdwan.log
-				fi
-				sleep 300
-			done
-			} &
-			LOG_MANAGEMENT_PID=\$!
-			trap \"kill -TERM \$ET_CORE_PID; kill -TERM \$LOG_MANAGEMENT_PID; exit\" SIGINT SIGTERM EXIT
-			wait \$ET_CORE_PID
-		   	"
+	     		procd_set_param command /bin/sh -c "cd /tmp ; exec ${sdwanbin} ${core_cmd} --console-log-level ${log} >> /tmp/sdwan.log 2>&1"
         	fi
 		
 		procd_set_param limits core="unlimited"
