@@ -1,6 +1,6 @@
 
 config sdwan
-	option enabled '0'
+	option enabled '1'
 	option etcmd 'etcmd'
 	option sdwanbin '/usr/bin/sdwan-core'
 	option auto_config_interface '1'

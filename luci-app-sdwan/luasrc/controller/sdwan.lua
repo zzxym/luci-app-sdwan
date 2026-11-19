@@ -581,8 +581,8 @@ end
 
 function restart_service()
 	luci.http.prepare_content("application/json")
-	luci.sys.exec("/etc/init.d/sdwan restart >/dev/null 2>&1 &")
-	luci.http.write_json({success = true})
+	local code = luci.sys.call("/etc/init.d/sdwan restart >/dev/null 2>&1")
+	luci.http.write_json({success = code == 0, code = code})
 end
 
 function toggle_core()
@@ -590,14 +590,15 @@ function toggle_core()
 	local uci = require "luci.model.uci".cursor()
 	uci:set("sdwan", uci:get_first("sdwan", "sdwan"), "enabled", enabled)
 	uci:commit("sdwan")
-	
+
+	local code
 	if enabled == "1" then
-		luci.sys.exec("/etc/init.d/sdwan start >/dev/null 2>&1 &")
+		code = luci.sys.call("/etc/init.d/sdwan start >/dev/null 2>&1")
 	else
-		luci.sys.exec("/etc/init.d/sdwan restart >/dev/null 2>&1 &")
+		code = luci.sys.call("/etc/init.d/sdwan restart >/dev/null 2>&1")
 	end
 	luci.http.prepare_content("application/json")
-	luci.http.write_json({success = true})
+	luci.http.write_json({success = code == 0, code = code})
 end
 
 -- 检测CPU架构

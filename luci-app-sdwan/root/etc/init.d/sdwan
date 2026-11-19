@@ -217,7 +217,7 @@ get_etconfig() {
 		latency_first="$(uci -q get sdwan.@sdwan[0].latency_first || echo 0)"
 		exit_node="$(uci -q get sdwan.@sdwan[0].exit_node || echo 0)"
 		smoltcp="$(uci -q get sdwan.@sdwan[0].smoltcp || echo 0)"
-		exit_nodes="$(uci -q get sdwan.@sdwan[0].exit_nodes || echo 0)"
+		exit_nodes="$(uci -q get sdwan.@sdwan[0].exit_nodes)"
 		no_tun="$(uci -q get sdwan.@sdwan[0].no_tun || echo 0)"
 		manual_routes="$(uci -q get sdwan.@sdwan[0].manual_routes)"
 		log="$(uci -q get sdwan.@sdwan[0].log || echo off)"
@@ -253,7 +253,10 @@ get_etconfig() {
 		interface_netmask="$(uci -q get sdwan.@sdwan[0].interface_netmask)"
 		auto_config_firewall="$(uci -q get sdwan.@sdwan[0].auto_config_firewall || echo 1)"
 		web_client="$(uci -q get sdwan.@sdwan[0].web_client || echo 1)"
-	
+
+		# UCI 中存在空值时也回退到安全默认值，避免生成无参数选项导致核心退出
+		[ -n "$comp" ] || comp="none"
+		[ -n "$log" ] || log="off"
 		}
 
 # 建立 web client 连接，使本机出现在官方 Web 控制台（http://oa.xiaolin.cc:11211）的设备列表中。
@@ -302,7 +305,7 @@ start_et() {
                 echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : sdwan-core_${cpucore}开始启动" >>/tmp/sdwan.log
                 path=$(dirname "$sdwanbin")
                 
-                if [ ! -f "$sdwanbin" ] && [ "$size" -lt 5000 ] && [ ! -z "$size" ] ; then
+                if [ ! -f "$sdwanbin" ] && [ -n "$size" ] && [ "$size" -lt 5000 ] ; then
                     echo "$(date '+%Y-%m-%d %H:%M:%S') sdwan : 自定义程序路径的可用空间不足，当前可用空间剩余${size}kb,自动切换为内存/tmp/sdwan-core" >>/tmp/sdwan.log
                     sed -i "/sdwanbin/c option sdwanbin '/tmp/sdwan-core' " /etc/config/sdwan 
                     sdwanbin=/tmp/sdwan-core
@@ -379,10 +382,10 @@ start_et() {
                 		if [ "$relay_network" = "1" ] ; then
                 			if [ ! -z "$whitelist" ] ; then
                   				if [[ "$(grep "list whitelist" /etc/config/sdwan | awk '{print $3}' | wc -l ) " -eq 1 ]]; then
-                    					core_cmd="${core_cmd} --relay-network-whitelist $whitelist"
+                    					core_cmd="${core_cmd} --relay-network-whitelist $(shell_quote "$whitelist")"
                   				else
                     					for whitelists in $(cat /etc/config/sdwan | grep 'list whitelist'  | awk -F 'list whitelist' '{print $2}' | sed "s/'/\n/g" | tr -d " ' "); do
-                    						core_cmd="${core_cmd} --relay-network-whitelist $whitelists"
+                    						core_cmd="${core_cmd} --relay-network-whitelist $(shell_quote "$whitelists")"
                    					done
                    				fi
                    			else

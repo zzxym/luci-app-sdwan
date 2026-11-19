@@ -8,6 +8,7 @@ uci -q batch <<-EOF >/dev/null
 EOF
 
 chmod +x /etc/init.d/sdwan
-/etc/init.d/sdwan enable
+/etc/init.d/sdwan enable >/dev/null 2>&1
+/etc/init.d/sdwan start >/dev/null 2>&1
 rm -rf /tmp/luci-indexcache /tmp/luci-modulecache
 exit 0

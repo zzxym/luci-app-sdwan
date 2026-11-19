@@ -47,14 +47,16 @@ if [ -f /tmp/sdwan_backup ] ; then
   echo "发现luci备份配置文件/tmp/sdwan_backup，开始恢复到/etc/config/sdwan"
   rm -rf /etc/config/sdwan
   mv -f /tmp/sdwan_backup /etc/config/sdwan
-  echo "请前往 VPN - SDWAN 界面进行重启插件"
+  echo "请前往 服务 - SDWAN 界面进行重启插件"
 fi
 if [ -d /tmp/sdwan_config_backup ] ; then
   echo "发现sdwan备份配置目录/tmp/sdwan_config_backup，开始恢复到/etc/sdwan"
   rm -rf /etc/sdwan
   mv -f /tmp/sdwan_config_backup /etc/sdwan
-  echo "请前往 VPN - SDWAN 界面进行重启插件"
+  echo "请前往 服务 - SDWAN 界面进行重启插件"
 fi
+/etc/init.d/sdwan enable >/dev/null 2>&1
+/etc/init.d/sdwan start >/dev/null 2>&1
 exit 0
 endef
 
